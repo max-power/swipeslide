@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width; initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <title>Swipe Gallery</title>
+  <script src="javascripts/zepto.min.js" type="text/javascript"></script>
+  <script src="javascripts/swipeslide.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="stylesheets/swipeslide.css">
+  <style type="text/css" media="screen">
+  header,footer,article,section,figure,figcaption {display: block;}
+  body,ul,li {margin:0;padding:0;}
+  body {
+    font: 16px/24px Helvetica, Arial, sans-serif;
+    -webkit-text-size-adjust:none;
+  }
+
+  header { padding: 20px 60px; color: #fff; background: #000;}
+
+  #g1 {
+    width: 100%;
+    max-width: 1200px;
+    background: #00FFCC;
+    margin: 0 auto;
+  }
+  #g1 figure {
+    position: relative;
+  }
+  #g1 figcaption {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    padding: 10px 60px;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    opacity: 0;
+    -webkit-transition: opacity 0.5s;
+  }
+  #g1 figcaption.active {
+    opacity: 1;
+  }
+  #g1 .ui-swipeslide-bullets {
+    width: 100%;
+    display: -webkit-box;
+    -webkit-box-orient:horizontal;
+    margin: 0;
+  }
+  #g1 .ui-swipeslide-bullets li {
+    display: block;
+    -webkit-box-flex: 1;
+    border-radius: 0;
+    margin: 0;
+    border: 0;
+    background: #000;
+    color: #fff;
+    height: 20px;
+    line-height: 20px;
+    font-size: 10px;
+    border-left: 1px solid #fff;
+  }
+  #g1 .ui-swipeslide-bullets li:first-child {
+      border-left: 0;
+  }
+  #g1 .ui-swipeslide-bullets li.active {
+    background: #fff;
+    color: #111;
+    font-weight: bold;
+    text-indent: 0;
+  }
+
+  #g2 {
+    width: 300px;
+    height: 200px;
+    background: #eee;
+    margin: 50px auto;
+  }
+  #g2 .ui-swipeslide-slide,
+  #g3 .ui-swipeslide-slide {
+    height: 200px;
+    width: 280px;
+    font-size: 80px;
+    color: #fff;
+    display: -webkit-box;
+    -webkit-box-align:center;
+    -webkit-box-pack:center;
+  }
+  #g2 ul { float: right; width: 280px;}
+  #g2 .ui-swipeslide-bullets { float: left; width: 20px; }
+  #g2 .ui-swipeslide-bullets li {
+    display: block;
+  }
+  
+  #g3 {
+    width: 80%;
+    height: 100px;
+    margin: 50px auto;
+  }
+  #g3 .ui-swipeslide-slide {
+    width: 200px; height: 100px; opacity: 0.2;
+    -webkit-transition: opacity 0.5s;
+  }
+  #g3 .ui-swipeslide-slide.active {
+    opacity: 1;
+  }
+  </style>
+  <script type="text/javascript">
+  $(document).ready(function() {
+    $('#g1').swipeSlide({content_selector: '#g1-content'});
+    $('#g2').swipeSlide({vertical: true});
+    $('#g3').swipeSlide({threeD: true});
+    $('#g1 figure').bind('tap dblclick', function(e){
+      $(this).find('figcaption').toggleClass('active');
+    })
+  })  
+  </script>
+</head>
+<body>
+  <header>
+    <h1>SwipeSlide</h1>
+  </header>
+  
+  <div id="g1">
+    <!--div class="legend">Swipe</div-->
+    <div id="g1-content">
+      <figure style="background: #fff;display: -webkit-box;  -webkit-box-pack: center; -webkit-box-align: center">
+        <div style="background: #000; color: #fff; width: 100px; height: 100px; text-align: center; border-radius: 50px; line-height: 100px">&laquo; SWIPE &laquo;</div>
+      </figure>
+      <figure>
+        <img src="media/amsterdam.jpg">
+        <figcaption>Amsterdam Panorama</figcaption>
+      </figure>
+      <figure>
+        <img src="media/saarschleife.jpg">
+        <figcaption>Saarschleife Panorama</figcaption>
+      </figure>
+      <figure>
+        <img src="media/river.jpg">
+        <figcaption>Provence Panorama</figcaption>
+      </figure>
+      <figure>
+        <img src="media/provence.jpg">
+        <figcaption>Provence Panorama</figcaption>
+      </figure>
+      <figure style="background: #fff;display: -webkit-box;  -webkit-box-pack: center; -webkit-box-align: center">
+        <p>
+          <a class="first">First</a> | 
+          <a class="prev">Prev</a> |
+          <a class="next">Next</a> |
+          <a class="last">Last</a>
+        </p>
+      </figure>
+      <figure>
+        <img src="media/pool.jpg">
+        <figcaption>Provence Panorama</figcaption>
+      </figure>
+      <figure>
+        <img src="media/santa-marta-pano-large.jpg" alt="Santa Marta Pano Large">
+        <figcaption>Santa Marta Panorama</figcaption>
+      </figure>
+      <figure>
+        <img src="media/barpark.jpg">
+        <figcaption>Barpark Panorama</figcaption>
+      </figure>
+      <figure>
+        <img src="media/gate.jpg">
+        <figcaption>Amsterdam Panorama</figcaption>
+      </figure>
+      <figure style="background: #fff;display: -webkit-box;  -webkit-box-pack: center; -webkit-box-align: center">
+        <div style="text-align: center">
+          <p>Thank you.</p>
+          <p><a href="http://www.onlinewahn.de/ende.htm" style="color: #000; font-size: 11px">Don't click here.</a></p>
+        </div>
+      </figure>
+    </div>
+  </div>
+
+
+  
+  <div id="g2">
+    <ul>
+      <li style="background: #f00;"><a class="next">Next</a></li>
+      <li style="background: #f00;">1</li>
+      <li style="background: #0f0;">2</li>
+      <li style="background: #00f;">3</li>
+    </ul>
+  </div>
+  
+  <div id="g3">
+    <ul>
+      <li style="background: #f00;">1</li>
+      <li style="background: #090;">2</li>
+      <li style="background: #0f0;">3</li>
+      <li style="background: #0f9;">4</li>
+      <li style="background: #0ff;">5</li>
+      <li style="background: #09f;">6</li>
+
+    </ul>
+  </div>
+
+</body>
+</html>

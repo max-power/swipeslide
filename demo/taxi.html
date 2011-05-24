@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width; initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <title>Taxi!</title>
+  <script src="javascripts/zepto.min.js" type="text/javascript"></script>
+  <script src="javascripts/swipeslide.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="stylesheets/swipeslide.css">
+  <style type="text/css" media="screen">
+    body, ul,li {
+      margin:0;padding:0;list-style:none;
+    }
+    #taxis {
+      position:relative;
+    }
+    #taxis .ui-swipeslide-bullets {
+      position:absolute;
+      top: 20px;
+      width: 20px;
+      left: 20px;
+    }
+    .ui-swipeslide-bullets li {
+      background-color: #fff;
+    }
+    .ui-swipeslide-bullets li.active {
+      border-color: #fff;
+    }
+  </style>
+  <script type="text/javascript">
+  $(document).ready(function() {
+    $('#taxis').swipeSlide();
+  })  
+  </script>
+</head>
+<body>  
+  <div id="taxis">
+    <ul>
+      <li><img src="media/taxi_london.jpg"></li>
+      <li><img src="media/taxi_istanbul.jpg"></li>
+      <li><img src="media/taxi_mexicocity.jpg"></li>
+      <li><img src="media/taxi_newyork.jpg"></li>
+    </ul>
+  </div>
+
+</body>
+</html>
