@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width; initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <title>Swipe Gallery</title>
+  <script src="javascripts/zepto.min.js" type="text/javascript"></script>
+  <script src="../swipeslide.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="stylesheets/swipeslide.css">
+  <style type="text/css">
+    figure {
+      /* CSS reset for default user agent stylesheet in desktop WebKit browsers (Chrome and Safari) */
+      -webkit-margin-before: 0;
+      -webkit-margin-after: 0;
+      -webkit-margin-start: 0;
+      -webkit-margin-end: 0;
+    }
+  </style>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $('#slider').swipeSlide({
+        content_selector: '#slider-content',
+        visible_slides: 3
+      });
+      $('#slider-2').swipeSlide({
+        content_selector: '#slider-2-content',
+        visible_slides: 2
+      });
+      $('#slider-3').swipeSlide({
+        content_selector: '#slider-3-content',
+        visible_slides: 1
+      });
+    })
+  </script>
+</head>
+<body>
+  <header>
+    <h1>Testing multislides</h1>
+    <p>The purpose is to test SwipeSlide against multiple content in each slide.</p>
+  </header>
+  <div id="slider">
+    <div id="slider-content">
+      <figure>
+        <img src="media/multi/amsterdam.jpg" />
+        <figcaption>Amsterdam</figcaption>
+      </figure>
+      <figure>
+        <img src="media/multi/barpark.jpg" />
+        <figcaption>Bar Park</figcaption>
+      </figure>
+      <figure>
+        <img src="media/multi/clody.jpg" />
+        <figcaption>Clody</figcaption>
+      </figure>
+      <figure>
+        <img src="media/multi/gate.jpg" />
+        <figcaption>Gate</figcaption>
+      </figure>
+      <figure>
+        <img src="media/multi/ny.jpg" />
+        <figcaption>New York</figcaption>
+      </figure>
+      <figure>
+        <img src="media/multi/panorama.jpg" />
+        <figcaption>Panorama</figcaption>
+      </figure>
+      <figure>
+        <img src="media/multi/pool.jpg" />
+        <figcaption>Pool</figcaption>
+      </figure>
+    </div>
+  </div>
+  <div id="slider-2">
+    <div id="slider-2-content">
+      <figure>
+        <img src="media/multi/amsterdam.jpg" />
+        <figcaption>Amsterdam</figcaption>
+      </figure>
+      <figure>
+        <img src="media/multi/barpark.jpg" />
+        <figcaption>Bar Park</figcaption>
+      </figure>
+      <figure>
+        <img src="media/multi/clody.jpg" />
+        <figcaption>Clody</figcaption>
+      </figure>
+      <figure>
+        <img src="media/multi/gate.jpg" />
+        <figcaption>Gate</figcaption>
+      </figure>
+      <figure>
+        <img src="media/multi/ny.jpg" />
+        <figcaption>New York</figcaption>
+      </figure>
+      <figure>
+        <img src="media/multi/panorama.jpg" />
+        <figcaption>Panorama</figcaption>
+      </figure>
+      <figure>
+        <img src="media/multi/pool.jpg" />
+        <figcaption>Pool</figcaption>
+      </figure>
+    </div>
+  </div>
+  <div id="slider-3">
+    <div id="slider-3-content">
+      <figure>
+        <img src="media/multi/amsterdam.jpg" />
+        <figcaption>Amsterdam</figcaption>
+      </figure>
+      <figure>
+        <img src="media/multi/barpark.jpg" />
+        <figcaption>Bar Park</figcaption>
+      </figure>
+      <figure>
+        <img src="media/multi/clody.jpg" />
+        <figcaption>Clody</figcaption>
+      </figure>
+      <figure>
+        <img src="media/multi/gate.jpg" />
+        <figcaption>Gate</figcaption>
+      </figure>
+      <figure>
+        <img src="media/multi/ny.jpg" />
+        <figcaption>New York</figcaption>
+      </figure>
+      <figure>
+        <img src="media/multi/panorama.jpg" />
+        <figcaption>Panorama</figcaption>
+      </figure>
+      <figure>
+        <img src="media/multi/pool.jpg" />
+        <figcaption>Pool</figcaption>
+      </figure>
+    </div>
+  </div>
+</body>
+</html>

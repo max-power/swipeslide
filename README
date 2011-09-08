@@ -38,4 +38,5 @@ You may pass some options to the swipeSlide function:
       directional_navigation: false,  // will inset previous and next links
       touch_navigation: true,         // will bind touch events. you don't need this if you don't develop for iOS devices.
       fancy_cursor: true,     // this you won't see on touch based devises.
-      threeD: false           // 3D Carousel instead of linear slider
+      threeD: false,          // 3D Carousel instead of linear slider
+      visible_slides: 1       // number of slides visible at the same time
