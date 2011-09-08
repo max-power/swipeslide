@@ -10,19 +10,19 @@
       directional_navigation: false,    // will inset previous and next links
       touch_navigation: true, // will bind touch events. you don't need this if you don't develop for iOS devices.
       fancy_cursor: true,     // this you won't see on touch based devises.
-      threeD: false           // 3D Carousel instead of linear slider
+      threeD: false,          // 3D Carousel instead of linear slider
+      visible_slides: 1       // Number of slides visible at the same time
     }, options);
 
     return this.each(function(index) {
       // Initialize variables used across the plugin
       var touch  = {}, current_slide = 0, nav_bullets,
-          // Container of the slides
           self   = $(this).addClass('ui-swipeslide').addClass('ui-swipeslide-' + (options.vertical ? 'vertical' : 'horizontal')).addClass(options.threeD ? 'ui-swipeslide-3d' : ''),
-          // Reference to the current slide
           reel   = self.find(options.content_selector).first().addClass('ui-swipeslide-content'),
-          // Array of all slides must be direct children of the 'content_selector'
           slides = reel.children().addClass('ui-swipeslide-slide'),
-          alpha  = 360/slides.length * (options.vertical ? -1 : 1), revolution = radius = 0;
+          alpha  = 360/slides.length * (options.vertical ? -1 : 1), revolution = radius = 0,
+          // number of "screens"
+          nb_bullets = Math.ceil(slides.length / options.visible_slides);
 
       if (options.bullet_navigation) build_bullet_navigation();
       if (options.directional_navigation) build_directional_navigation();
@@ -75,8 +75,8 @@
        */
       function init() {
         var c = container_dimension();
-          reel.css(options.vertical ? 'height' : 'width', c * (options.threeD ? 1 : slides.length)+'px');
-        slides.css(options.vertical ? 'height' : 'width', c+'px');
+          reel.css(options.vertical ? 'height' : 'width', c * (options.threeD ? 1 : nb_bullets)+'px');
+        slides.css(options.vertical ? 'height' : 'width', (c / options.visible_slides)+'px');
         
         if (options.threeD) {
           radius = Math.round( (c/2) / Math.tan(Math.PI / slides.length) );
@@ -115,7 +115,7 @@
           vectors[options.vertical ? 0 : 1] = 1;
           return { translate3d: '0,0,'+ -radius + 'px', rotate3d: vectors.join(',') +','+ delta + 'deg' }
         } else {
-          var position = -current_slide * container_dimension() + distance;
+          var position = -current_slide * (container_dimension() / options.visible_slides) + distance;
           vectors[options.vertical ? 1 : 0] = position + 'px';
           return { translate3d: vectors.join(',') }
         }
@@ -146,7 +146,7 @@
        * @return Integer the index of the previous slide
        */
       function prev_slide() {
-        var p = current_slide-1;
+        var p = current_slide-options.visible_slides;
         if (options.threeD) {
           if (p < 0) { p = slides.length + p; revolution--; }
           return Math.abs(p % slides.length);
@@ -160,7 +160,7 @@
        * @return Integer the index of the next slide
        */
       function next_slide() { 
-        var n = current_slide+1;
+        var n = current_slide+options.visible_slides;
         if (options.threeD) {
           if (n / slides.length == 1) revolution++;
           return n % slides.length;
@@ -182,7 +182,8 @@
       
       /* bullet navigation */
       function build_bullet_navigation() {
-        var s = ''; for (i=0; i<slides.length; i++) s+='<li data-index="'+i+'">'+(i+1)+'</li>';
+        var s = '';
+        for (i=0; i<nb_bullets; i++) s+='<li data-index="'+(i*options.visible_slides)+'">'+(i*options.visible_slides+1)+'</li>';
         nav_bullets = $('<ul class="ui-swipeslide-bullets"></ul>').html(s);
         if (options.bullet_navigation == 'link') {
           nav_bullets.delegate('li', 'click', function() {
@@ -194,7 +195,7 @@
       }
       
       function set_active_bullet() {
-        nav_bullets.children('li').removeClass('active').eq(current_slide).addClass('active');
+        nav_bullets.children('li').removeClass('active').eq(current_slide/options.visible_slides).addClass('active');
       }
       
       /* prev/next navigation */
