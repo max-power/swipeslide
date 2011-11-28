@@ -40,15 +40,15 @@
         })
           // Save the position where the user is moving the current slide, and move it
           .bind('mousemove touchmove', function(e){
-            // Don't do anything if the mousedown/touchstart events didn't happen
-            if (!touch.x1 || !touch.x2) return;
-            touch.x2 = e.pageX || e.touches[0].pageX;
-            touch.y2 = e.pageY || e.touches[0].pageY;
-            var distance = swipe_distance(touch);
-            // Don't move if it's the (First slide + right swipe) or (Last slide + left swipe).
-            if ((current_slide==0 && distance > 0) || (current_slide==slides.length-1 && distance < 0)) return;
-            e.preventDefault();
-            move_slider(distance);
+          // Don't do anything if the mousedown/touchstart events didn't happen
+          if (!touch.x1 || !touch.x2) return;
+          touch.x2 = e.pageX || e.touches[0].pageX;
+          touch.y2 = e.pageY || e.touches[0].pageY;
+          var distance = swipe_distance(touch);
+          // Don't move if it's the (First slide + right swipe) or (Last slide + left swipe).
+          if ((current_slide==0 && distance > 0) || (current_slide==slides.length-1 && distance < 0)) return;
+          e.preventDefault();
+          move_slider(distance); 
         })
           // Save the position where the user is releasing the current slide, and move it
           .bind('mouseup mouseout touchend touchcancel touchleave', function(e) {
