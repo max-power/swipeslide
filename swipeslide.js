@@ -46,9 +46,13 @@
           touch.y2 = e.pageY || e.touches[0].pageY;
           var distance = swipe_distance(touch);
           // Don't move if it's the (First slide + right swipe) or (Last slide + left swipe).
-          if ((current_slide==0 && distance > 0) || (current_slide==slides.length-1 && distance < 0)) return;
-          e.preventDefault();
-          move_slider(distance); 
+          
+          if (!options.threeD && (current_slide==0 && distance > 0) || (current_slide==slides.length-1 && distance < 0)) {
+            move_slider();
+          } else {
+            e.preventDefault();
+            move_slider(distance);
+          }
         })
           // Save the position where the user is releasing the current slide, and move it
           .bind('mouseup mouseout touchend touchcancel touchleave', function(e) {
