@@ -97,7 +97,7 @@
        * @param delay Integer the delay in seconds before moving the slides
        */
       function move_slider(distance, delay) {
-        reel.anim(animation_properties(distance || 0), delay || 0);
+        reel.animate(animation_properties(distance || 0), (delay || 0) * 1000);
         slides.removeClass('active').eq(current_slide).addClass('active');
         if (options.fancy_cursor && options.touch_navigation) set_cursor();
         if (options.bullet_navigation) set_active_bullet();
