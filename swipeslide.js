@@ -64,10 +64,10 @@
       }
       
       /* bind listeners to any elments with '.prev' or '.next' class */
-      self.delegate('.next', 'click', function(){ current_slide = next_slide(); move_slider(0, options.delay); })
-          .delegate('.prev', 'click', function(){ current_slide = prev_slide(); move_slider(0, options.delay); })
-          .delegate('.first','click', function(){ current_slide = 0; move_slider(0, options.delay); })
-          .delegate('.last', 'click', function(){ current_slide = slides.length-1; move_slider(0, options.delay); });
+      self.delegate('.next', 'touchend click', function(){ current_slide = next_slide(); move_slider(0, options.delay); })
+          .delegate('.prev', 'touchend click', function(){ current_slide = prev_slide(); move_slider(0, options.delay); })
+          .delegate('.first','touchend click', function(){ current_slide = 0; move_slider(0, options.delay); })
+          .delegate('.last', 'touchend click', function(){ current_slide = slides.length-1; move_slider(0, options.delay); });
       
       /**
        * Initalize the slider
@@ -187,7 +187,7 @@
         for (i=0; i<nb_bullets; i++) s+='<li data-index="'+(i*options.visible_slides)+'">'+(i*options.visible_slides+1)+'</li>';
         nav_bullets = $('<ul class="ui-swipeslide-bullets"></ul>').html(s);
         if (options.bullet_navigation == 'link') {
-          nav_bullets.delegate('li', 'click', function() {
+          nav_bullets.delegate('li', 'touchend click', function() {
             current_slide = (parseInt($(this).attr('data-index'), 10));
             move_slider(0, options.delay);
           });
