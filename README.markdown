@@ -14,8 +14,8 @@ A Zepto Plugin for iOS like swipe navigation. WebKit only.
 </div>
 
 
-<script type="text/javascript" src="zepto.js">
-<script type="text/javascript" src="swipeslide.js">
+<script type="text/javascript" src="zepto.js"></script>
+<script type="text/javascript" src="swipeslide.js"></script>
 <link rel="stylesheet" href="swipeslide.css">
 <script type="text/javascript">
   $(document).ready(function() {
