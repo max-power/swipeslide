@@ -11,6 +11,7 @@
       touch_navigation: true, // will bind touch events. you don't need this if you don't develop for iOS devices.
       fancy_cursor: true,     // this you won't see on touch based devises.
       threeD: false,          // 3D Carousel instead of linear slider
+      prevent_default: true , // prevent horizontal or vertical scroll event
       visible_slides: 1       // Number of slides visible at the same time
     }, options);
 
@@ -50,7 +51,7 @@
           if (!options.threeD && (current_slide==0 && distance > 0) || (current_slide==slides.length-1 && distance < 0)) {
             move_slider();
           } else {
-            e.preventDefault();
+            if (options.prevent_default) e.preventDefault();
             move_slider(distance);
           }
         })
