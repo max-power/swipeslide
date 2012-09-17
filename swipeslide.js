@@ -16,11 +16,21 @@
     }, options);
 
     return this.each(function(index) {
-      // Initialize variables used across the plugin
+      // Initialize element variables.
+      var self = $(this),
+          reel = self.find(options.contentSelector).first(),
+          slides = reel.children();
+
+      // Do not swipeslide if no slides or multiple reels.
+      if (reel.length != 1 || slides.length <= 1) return;
+
+      // Add swipeslide css classes.
+      self.addClass('ui-swipeslide').addClass('ui-swipeslide-' + (options.vertical ? 'vertical' : 'horizontal')).addClass(options.threeD ? 'ui-swipeslide-3d' : '');
+      reel.addClass('ui-swipeslide-content');
+      slides.addClass('ui-swipeslide-slide');
+
+      // Initialize remaining variables.
       var touch  = {}, currentSlide = 0, navBullets,
-          self   = $(this).addClass('ui-swipeslide').addClass('ui-swipeslide-' + (options.vertical ? 'vertical' : 'horizontal')).addClass(options.threeD ? 'ui-swipeslide-3d' : ''),
-          reel   = self.find(options.contentSelector).first().addClass('ui-swipeslide-content'),
-          slides = reel.children().addClass('ui-swipeslide-slide'),
           alpha  = 360/slides.length * (options.vertical ? -1 : 1), revolution = radius = 0,
           // number of "screens"
           nbBullets = Math.ceil(slides.length / options.visibleSlides);
