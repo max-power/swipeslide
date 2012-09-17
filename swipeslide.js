@@ -12,7 +12,8 @@
       fancyCursor: true,            // this you won't see on touch based devises.
       threeD: false,                // 3D Carousel instead of linear slider
       preventDefault: true ,        // prevent horizontal or vertical scroll event
-      visibleSlides: 1              // number of slides visible at the same time
+      visibleSlides: 1,             // number of slides visible at the same time
+      change: null                  // after slide transition callback
     }, options);
 
     return this.each(function(index) {
@@ -71,19 +72,21 @@
           var tolerance = options.tolerance * containerDimension() / 2;
           if (Math.abs(distance) > tolerance) {
             currentSlide = distance < 0 ? nextSlide() : prevSlide();
+            moveSlider(0, options.delay, options.change);
+          } else {
+            moveSlider(0, options.delay);
           }
-          moveSlider(0, options.delay);
           // Reinitialize the touch object for the next touch events
           touch = {};
         });
       }
-      
+
       /* bind listeners to any elments with '.prev' or '.next' class */
-      self.delegate('.next', 'touchend click', function(){ currentSlide = nextSlide(); moveSlider(0, options.delay); })
-          .delegate('.prev', 'touchend click', function(){ currentSlide = prevSlide(); moveSlider(0, options.delay); })
-          .delegate('.first','touchend click', function(){ currentSlide = 0; moveSlider(0, options.delay); })
-          .delegate('.last', 'touchend click', function(){ currentSlide = slides.length-1; moveSlider(0, options.delay); });
-      
+      self.delegate('.next', 'touchend click', function(){ currentSlide = nextSlide(); moveSlider(0, options.delay, options.change); })
+          .delegate('.prev', 'touchend click', function(){ currentSlide = prevSlide(); moveSlider(0, options.delay, options.change); })
+          .delegate('.first','touchend click', function(){ currentSlide = 0; moveSlider(0, options.delay, options.change); })
+          .delegate('.last', 'touchend click', function(){ currentSlide = slides.length-1; moveSlider(0, options.delay, options.change); });
+
       /**
        * Initalize the slider
        *
@@ -104,20 +107,21 @@
         }
         moveSlider();
       }
-      
+
       /**
        * Animate the slides
        *
        * @param distance Integer the distance to add to the slides movement in pixels
        * @param delay Integer the delay in seconds before moving the slides
        */
-      function moveSlider(distance, delay) {
-        reel.animate(animationProperties(distance || 0), (delay || 0) * 1000);
+      function moveSlider(distance, delay, callback) {
+        opts = { duration: ((delay || 0) * 1000), complete: callback };
+        reel.animate(animationProperties(distance || 0), opts)
         slides.removeClass('active').eq(currentSlide).addClass('active');
         if (options.fancyCursor && options.touchNavigation) setCursor();
         if (options.bulletNavigation) setActiveBullet();
       }
-      
+
       /**
        * Calculate the tridimensionnal amount of movement necessary to apply to the slides
        *
@@ -136,7 +140,7 @@
           return { translate3d: vectors.join(',') }
         }
       }
-      
+
       /**
        * Calculate the container dimension
        *
@@ -145,7 +149,7 @@
       function containerDimension() {
         return parseInt(self.css(options.vertical ? 'height' : 'width'), 10);
       }
-      
+
       /**
        * Calculate the distance swiped by the user
        *
@@ -155,7 +159,7 @@
       function swipeDistance(t) {
         return options.vertical ? (t.y2 - t.y1) : (t.x2 - t.x1);
       }
-      
+
       /**
        * Calculate the index of the previous slide
        *
@@ -169,7 +173,7 @@
         }
         return Math.max(p, 0);
       }
-      
+
       /**
        * Calculate the index of the next slide
        *
@@ -195,7 +199,7 @@
         }
         reel.css('cursor', c + '-resize');
       }
-      
+
       /* bullet navigation */
       function buildBulletNavigation() {
         var s = '';
@@ -204,16 +208,16 @@
         if (options.bulletNavigation == 'link') {
           navBullets.delegate('li', 'touchend click', function() {
             currentSlide = (parseInt($(this).attr('data-index'), 10));
-            moveSlider(0, options.delay);
+            moveSlider(0, options.delay, options.change);
           });
         }
         self.append(navBullets);
       }
-      
+
       function setActiveBullet() {
         navBullets.children('li').removeClass('active').eq(currentSlide/options.visibleSlides).addClass('active');
       }
-      
+
       /* prev/next navigation */
       function buildDirectionalNavigation() {
         self.append('<ul class="ui-swipeslide-nav"><li class="prev">Previous</li><li class="next">Next</li></ul>');
