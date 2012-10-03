@@ -40,6 +40,7 @@ You may pass some options to the swipeSlide function:
   fancyCursor: true,            // this you won't see on touch based devises.
   threeD: false,                // 3D Carousel instead of linear slider
   preventDefault: true ,        // prevent horizontal or vertical scroll event
-  visibleSlides: 1              // number of slides visible at the same time
+  visibleSlides: 1,             // number of slides visible at the same time
+  change: function() { ... }    // after slide transition callback
 }
 ```
