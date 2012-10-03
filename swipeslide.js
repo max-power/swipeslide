@@ -136,8 +136,11 @@
           return { translate3d: '0,0,'+ -radius + 'px', rotate3d: vectors.join(',') +','+ delta + 'deg' }
         } else {
           var position = -currentSlide * (containerDimension() / options.visibleSlides) + distance;
-          vectors[options.vertical ? 1 : 0] = position + 'px';
-          return { translate3d: vectors.join(',') }
+          if (options.vertical) {
+            return { translateY: position + 'px' }
+          } else {
+            return { translateX: position + 'px' }
+          }
         }
       }
 
