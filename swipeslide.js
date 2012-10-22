@@ -16,7 +16,10 @@
       change: null                  // after slide transition callback
     }, options);
 
+    var touchScreen = 'ontouchstart' in document.documentElement;
+
     return this.each(function(index) {
+
       // Initialize element variables.
       var self = $(this),
           reel = self.find(options.contentSelector).first(),
@@ -44,14 +47,14 @@
       /* bind touch events */
       if (options.touchNavigation) {
         // Save the position where the user started to touch the current slide
-        reel.bind('mousedown touchstart', function(e) {
+        reel.bind(touchScreen ? 'touchstart' : 'mousedown', function(e) {
           /* if (e.touches && e.touches.length > 1) return container.trigger('touchend'); */
           touch.x1 = touch.x2 = e.pageX || e.touches[0].pageX;
           touch.y1 = touch.y2 = e.pageY || e.touches[0].pageY;
           if (!e.touches) e.preventDefault();
         })
           // Save the position where the user is moving the current slide, and move it
-          .bind('mousemove touchmove', function(e){
+          .bind(touchScreen ? 'touchmove' : 'mousemove', function(e){
           // Don't do anything if the mousedown/touchstart events didn't happen
           if (!touch.x1 || !touch.x2) return;
           touch.x2 = e.pageX || e.touches[0].pageX;
@@ -67,7 +70,7 @@
           }
         })
           // Save the position where the user is releasing the current slide, and move it
-          .bind('mouseup mouseout touchend touchcancel touchleave', function(e) {
+          .bind(touchScreen ? 'touchend touchcancel touchleave' : 'mouseup mouseout', function(e) {
           var distance  = swipeDistance(touch);
           var tolerance = options.tolerance * containerDimension() / 2;
           if (Math.abs(distance) > tolerance) {
@@ -82,10 +85,10 @@
       }
 
       /* bind listeners to any elments with '.prev' or '.next' class */
-      self.delegate('.next', 'touchend click', function(){ currentSlide = nextSlide(); moveSlider(0, options.delay, options.change); })
-          .delegate('.prev', 'touchend click', function(){ currentSlide = prevSlide(); moveSlider(0, options.delay, options.change); })
-          .delegate('.first','touchend click', function(){ currentSlide = 0; moveSlider(0, options.delay, options.change); })
-          .delegate('.last', 'touchend click', function(){ currentSlide = slides.length-1; moveSlider(0, options.delay, options.change); });
+      self.delegate('.next', touchScreen ? 'touchend' : 'click', function(){ currentSlide = nextSlide(); moveSlider(0, options.delay, options.change); })
+          .delegate('.prev', touchScreen ? 'touchend' : 'click', function(){ currentSlide = prevSlide(); moveSlider(0, options.delay, options.change); })
+          .delegate('.first',touchScreen ? 'touchend' : 'click', function(){ currentSlide = 0; moveSlider(0, options.delay, options.change); })
+          .delegate('.last', touchScreen ? 'touchend' : 'click', function(){ currentSlide = slides.length-1; moveSlider(0, options.delay, options.change); });
 
       /**
        * Initalize the slider
@@ -182,7 +185,7 @@
        *
        * @return Integer the index of the next slide
        */
-      function nextSlide() { 
+      function nextSlide() {
         var n = currentSlide+options.visibleSlides;
         if (options.threeD) {
           if (n / slides.length == 1) revolution++;
@@ -209,7 +212,7 @@
         for (i=0; i<nbBullets; i++) s+='<li data-index="'+(i*options.visibleSlides)+'">'+(i*options.visibleSlides+1)+'</li>';
         navBullets = $('<ul class="ui-swipeslide-bullets"></ul>').html(s);
         if (options.bulletNavigation == 'link') {
-          navBullets.delegate('li', 'touchend click', function() {
+          navBullets.delegate('li', touchScreen ? 'touchend' : 'click', function() {
             currentSlide = (parseInt($(this).attr('data-index'), 10));
             moveSlider(0, options.delay, options.change);
           });
