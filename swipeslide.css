@@ -12,7 +12,8 @@
   -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none;
 }
-.ui-swipeslide-content {
+.ui-swipeslide .ui-swipeslide-vertical,
+.ui-swipeslide .ui-swipeslide-horizontal {
   -webkit-transform: translate3d(0,0,0);
   overflow: hidden;
   display: -webkit-box;
@@ -22,16 +23,22 @@
   -moz-box-orient: horizontal;
   box-orient: horizontal;
 }
-.ui-swipeslide-vertical .ui-swipeslide-content {
+.ui-swipeslide .ui-swipeslide-vertical {
   -webkit-box-orient: vertical;
   -moz-box-orient: vertical;
   box-orient: vertical;
 }
-.ui-swipeslide-slide {
+.ui-swipeslide .ui-swipeslide-slide {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
+
+
+
+
+
+
 /* 3d */
 .ui-swipeslide-3d {
   -webkit-perspective: 1000;
