@@ -49,17 +49,15 @@
         // Save the position where the user started to touch the current slide
         reel.bind(touchScreen ? 'touchstart' : 'mousedown', function(e) {
           /* if (e.touches && e.touches.length > 1) return container.trigger('touchend'); */
-          touch.x1 = touch.x2 = e.pageX || e.touches[0].pageX;
-          touch.y1 = touch.y2 = e.pageY || e.touches[0].pageY;
-          if (!e.touches) e.preventDefault();
+          if (!e.touches) e.preventDefault()
+          touch.start = getTouch(e)
         })
-          // Save the position where the user is moving the current slide, and move it
-          .bind(touchScreen ? 'touchmove' : 'mousemove', function(e){
+        // Save the position where the user is moving the current slide, and move it
+        .bind(touchScreen ? 'touchmove' : 'mousemove', function(e){
           // Don't do anything if the mousedown/touchstart events didn't happen
-          if (!touch.x1 || !touch.x2) return;
-          touch.x2 = e.pageX || e.touches[0].pageX;
-          touch.y2 = e.pageY || e.touches[0].pageY;
-          var distance = swipeDistance(touch);
+          if (!touch.start) return;
+          touch.end = getTouch(e)
+          var distance = swipeDistance(touch)
           // Don't move if it's the (First slide + right swipe) or (Last slide + left swipe).
           
           if (!options.threeD && (currentSlide==0 && distance > 0) || (currentSlide==slides.length-1 && distance < 0)) {
@@ -69,8 +67,8 @@
             moveSlider(distance);
           }
         })
-          // Save the position where the user is releasing the current slide, and move it
-          .bind(touchScreen ? 'touchend touchcancel touchleave' : 'mouseup mouseout', function(e) {
+        // Save the position where the user is releasing the current slide, and move it
+        .bind(touchScreen ? 'touchend touchcancel touchleave' : 'mouseup mouseout', function(e) {
           var distance  = swipeDistance(touch);
           var tolerance = options.tolerance * containerDimension() / 2;
           if (Math.abs(distance) > tolerance) {
@@ -163,7 +161,7 @@
        * @return Integer the swiped distance in pixels
        */
       function swipeDistance(t) {
-        return options.vertical ? (t.y2 - t.y1) : (t.x2 - t.x1);
+        return options.vertical ? (t.end.y - t.start.y) : (t.end.x - t.start.x)
       }
 
       /**
@@ -192,6 +190,13 @@
           return n % slides.length;
         }
         return Math.min(n, slides.length-1);
+      }
+      
+      function getTouch(e) {
+        return {
+          x: e.pageX || e.touches[0].pageX,
+          y: e.pageY || e.touches[0].pageY
+        }
       }
 
       /* optional fancy stuff */
