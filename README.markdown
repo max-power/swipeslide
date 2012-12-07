@@ -37,6 +37,8 @@ You may pass some options to the swipeSlide function:
   threeD: false,                // 3D Carousel instead of linear slider
   visibleSlides: 1,             // number of slides visible at the same time
   useTranslate3d: true,         // will use translateX or translateY if set to false
-  onChange: function() { ... }    // after slide transition callback
+  bulletNavigation: 'link',     // false, true or 'link' (event handlers will be attached)
+  directionalNavigation: false, // will inset previous and next links
+  onChange: function() { ... }  // after slide transition callback
 }
 ```
