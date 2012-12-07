@@ -45,7 +45,8 @@
   position: relative;
   overflow:visible;
 }
-.ui-swipeslide-3d .ui-swipeslide-content {
+.ui-swipeslide-3d .ui-swipeslide-horizontal,
+.ui-swipeslide-3d .ui-swipeslide-vertical {
   -webkit-transform-style: preserve-3d;
   position: relatve;
   display: block;
@@ -57,6 +58,7 @@
   position: absolute;
 }
 /* end not editable styles */  
+
 
 /* bullets */
 .ui-swipeslide-bullets {

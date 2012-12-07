@@ -74,7 +74,7 @@ SwipeSlide.prototype = {
     var events = {
       start: this.isTouch ? 'touchstart' : 'mousedown',
       move:  this.isTouch ? 'touchmove'  : 'mousemove',
-      end:   this.isTouch ? 'touchend touchcancel' : 'mouseup mouseout',
+      end:   this.isTouch ? 'touchend touchcancel' : 'mouseup mouseout mouseleave',
       click: this.isTouch ? 'touchend' : 'click'
     }
     // bind listeners for touch movement
@@ -144,11 +144,53 @@ SwipeSlide.prototype = {
   }
 }
 
+
+
+var SwipeSlide3D = function(container, options) {
+  SwipeSlide.call(this, container, options)
+  this.alpha = 360/this.slides.length * (this.options.vertical ? -1 : 1)
+  this.revolution = 0
+  this.radius = 0
+  this.container.addClass('ui-swipeslide-3d')
+  this.setup()
+}
+SwipeSlide3D.prototype = new SwipeSlide
+
+$.extend(SwipeSlide3D.prototype, {
+  setup: function() {
+    var fn = this.options.vertical ? 'height' : 'width'
+    this.dimension = this.container[fn]()
+    this.tolerance = this.options.tolerance * this.dimension / 2
+    this.radius = Math.round( (this.dimension/2) / Math.tan(Math.PI / this.slides.length) );
+    this.slides.each($.proxy(this.positionSlide, this))
+    this.move(0,0)
+  },
+  validPage: function(num){ 
+    if (num < 0) {
+      num += this.numPages; this.revolution--
+    } else if (num >= this.numPages) {
+      num %= this.numPages; this.revolution++
+    }
+    return num
+  },
+  animationProperties: function(distance) {
+    var vectors = [0,0,0]; vectors[this.options.vertical?0:1] = 1;
+    var delta = (this.alpha * distance / this.dimension) - (this.alpha * this.currentPage) - (this.revolution * 360 / this.alpha)
+    return { translate3d: '0,0,'+ -this.radius + 'px', rotate3d: vectors.join(',') +','+ delta + 'deg' }
+  },
+  positionSlide: function(i, slide){
+    var vectors = [0,0,0]; vectors[this.options.vertical?0:1] = 1;
+    $(slide).animate({
+      rotate3d: vectors.join(',')+','+ (this.alpha * i)+'deg', 
+      translate3d: '0,0,'+this.radius+'px'
+    }, {duration: 0})
+  }
+})
+
 // zepto plugin
 ;(function($) {
   $.fn.swipeSlide = function(options) {
-    return this.each(function() {
-      new SwipeSlide(this, options)
-    })
+    var klass = options.threeD ? SwipeSlide3D : SwipeSlide
+    return this.each(function() { new klass(this, options) })
   }
 })(window.Zepto)
