@@ -206,12 +206,12 @@ $.extend(SwipeSlide3D.prototype, {
     return num
   },
   animationProperties: function(distance) {
-    var vectors = [0,0,0]; vectors[this.options.vertical?0:1] = 1;
+    var vectors = [0,0,0]; vectors[+!this.options.vertical] = 1;
     var delta = (this.alpha * distance / this.dimension) - (this.alpha * this.currentPage) - (this.revolution * 360)
     return { translate3d: '0,0,'+ -this.radius + 'px', rotate3d: vectors.join(',') +','+ delta + 'deg' }
   },
   positionSlide: function(i, slide){
-    var vectors = [0,0,0]; vectors[this.options.vertical?0:1] = 1;
+    var vectors = [0,0,0]; vectors[+!this.options.vertical] = 1;
     $(slide).animate({
       rotate3d: vectors.join(',')+','+ (this.alpha * i)+'deg', 
       translate3d: '0,0,'+this.radius+'px'
