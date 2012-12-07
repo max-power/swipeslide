@@ -33,6 +33,7 @@ SwipeSlide.prototype = {
     if (this.currentPage != newPage) {
       callback = $.proxy(this.callback, this)
       this.currentPage = newPage
+      if (this.options.bulletNavigation) this.setActiveBullet()
     }
     this.move(0, this.options.delay, callback)
   },
@@ -129,7 +130,6 @@ SwipeSlide.prototype = {
   },
     
   callback: function(){
-    if (this.options.bulletNavigation) this.setActiveBullet()
     // call user defined callback function with the currentPage number and an array of visible slides
     if ($.isFunction(this.options.onChange)) this.options.onChange(this, this.currentPage, this.visibleSlides())
   },
@@ -165,7 +165,6 @@ SwipeSlide.prototype = {
     if (this.options.bulletNavigation == 'link') {
       this.navBullets.on(this.events.click, 'li', $.proxy(function(e){
         this.page($(e.currentTarget).data('index'))
-        this.setActiveBullet()
       }, this))
     }
     this.container.append(this.navBullets)
