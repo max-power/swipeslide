@@ -42,7 +42,7 @@
     right:0;
     box-shadow: 0 2px 5px #000 inset;
   }
-  #dashboard-widgets li {
+  #dashboard-widgets .ui-swipeslide-slide {
     padding: 10px;
   }
   #dashboard-widgets div {
@@ -55,13 +55,16 @@
     overflow:hidden
   }
 
+  #dashboard-widgets .ui-swipeslide-nav li {
+    width: 20px
+  }
   </style>
   <script type="text/javascript">
 
   $(document).ready(function() {
     new SwipeSlide($('#g3'), { first: 3, callback: function(index, s){ console.log(index) }})
     new SwipeSlide($('#g2'), {vertical: true, visibleSlides: 3})
-    new SwipeSlide($('#dashboard-widgets'), {visibleSlides: 6})
+    new SwipeSlide($('#dashboard-widgets'), {visibleSlides: 6, directionalNavigation: true, bulletNavigation: false})
     
 //    $('#g3').swipeSlide({ first: 3, callback: function(index, s){ console.log(index) }})
   })
@@ -71,7 +74,6 @@
 <body>
   
   <header>
-    <div id="debug" style="float:right;">DEBUG</div>
     <h1>SwipeSlide</h1>
   </header>
 

@@ -1,6 +1,6 @@
 /* do not edit those lines */
 .ui-swipeslide,
-.ui-swipeslide-content,
+.ui-swipeslide-reel,
 .ui-swipeslide-slide,
 .ui-swipeslide-slide img {
   width: 100%;
@@ -12,8 +12,7 @@
   -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none;
 }
-.ui-swipeslide .ui-swipeslide-vertical,
-.ui-swipeslide .ui-swipeslide-horizontal {
+.ui-swipeslide-reel {
   -webkit-transform: translate3d(0,0,0);
   overflow: hidden;
   display: -webkit-box;
@@ -23,21 +22,16 @@
   -moz-box-orient: horizontal;
   box-orient: horizontal;
 }
-.ui-swipeslide .ui-swipeslide-vertical {
+.ui-swipeslide-vertical .ui-swipeslide-reel {
   -webkit-box-orient: vertical;
   -moz-box-orient: vertical;
   box-orient: vertical;
 }
-.ui-swipeslide .ui-swipeslide-slide {
+.ui-swipeslide-slide {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-
-
-
-
-
 
 /* 3d */
 .ui-swipeslide-3d {
@@ -45,8 +39,7 @@
   position: relative;
   overflow:visible;
 }
-.ui-swipeslide-3d .ui-swipeslide-horizontal,
-.ui-swipeslide-3d .ui-swipeslide-vertical {
+.ui-swipeslide-3d .ui-swipeslide-reel {
   -webkit-transform-style: preserve-3d;
   position: relatve;
   display: block;
@@ -58,6 +51,8 @@
   position: absolute;
 }
 /* end not editable styles */  
+
+
 
 
 /* bullets */

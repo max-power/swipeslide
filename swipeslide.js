@@ -1,21 +1,26 @@
 var SwipeSlide = function(container, options){
   this.options = $.extend({
-    first: 0,
+    first: 0,                     // the first visible slide on initialization
     visibleSlides: 1,             // number of slides visible at the same time
     vertical: false,              // horizontal or vertical
     tolerance:0.5,                // values between 0 and 1, where 1 means you have to drag to the center of the slide (a value of 1 equals the ios behaviour)
     delay: 0.3,                   // animation speed in seconds,
     useTranslate3d: true,
-    onChange: null,
+    bulletNavigation: 'link',    // false, true or 'link' (event handlers will be attached)
+    directionalNavigation: false,  // will inset previous and next links
+    onChange: null,              // after slide transition callback
   }, options)
 
-  this.container   = $(container).addClass('ui-swipeslide')
-  this.reel        = this.container.children().first().addClass('ui-swipeslide-'+['horizontal','vertical'][+this.options.vertical])
+  this.container   = $(container).addClass('ui-swipeslide').addClass('ui-swipeslide-'+['horizontal','vertical'][+this.options.vertical])
+  this.reel        = this.container.children().first().addClass('ui-swipeslide-reel')
   this.slides      = this.reel.children().addClass('ui-swipeslide-slide')
   this.numPages    = Math.ceil(this.slides.length / this.options.visibleSlides)
   this.currentPage = this.validPage(this.options.first)
   this.isTouch     = 'ontouchstart' in document.documentElement
   this.touch       = {}
+  
+  if (this.options.bulletNavigation) this.setupBulletNavigation()
+  if (this.options.directionalNavigation) this.setupDirectionalNavigation()
   this.setup()
   this.addEventListeners()
 }
@@ -69,26 +74,27 @@ SwipeSlide.prototype = {
     // move to first slide without animation
     this.move(0,0)
   },
+  
+  events: {
+    start: this.isTouch ? 'touchstart' : 'mousedown',
+    move:  this.isTouch ? 'touchmove'  : 'mousemove',
+    end:   this.isTouch ? 'touchend touchcancel' : 'mouseup mouseout mouseleave',
+    click: this.isTouch ? 'touchend' : 'click'
+  },
     
   addEventListeners: function(){
-    var events = {
-      start: this.isTouch ? 'touchstart' : 'mousedown',
-      move:  this.isTouch ? 'touchmove'  : 'mousemove',
-      end:   this.isTouch ? 'touchend touchcancel' : 'mouseup mouseout mouseleave',
-      click: this.isTouch ? 'touchend' : 'click'
-    }
     // bind listeners for touch movement
     this.reel
-      .on(events.start, $.proxy(this.touchStart, this))
-      .on(events.move,  $.proxy(this.touchMove, this))
-      .on(events.end,   $.proxy(this.touchEnd, this))
+      .on(this.events.start, $.proxy(this.touchStart, this))
+      .on(this.events.move,  $.proxy(this.touchMove, this))
+      .on(this.events.end,   $.proxy(this.touchEnd, this))
       
     // bind listeners to any elments with '.prev', '.next', '.first' or '.last' class 
     this.container
-      .on(events.click, '.next',  $.proxy(this.next,  this))
-      .on(events.click, '.prev',  $.proxy(this.prev,  this))
-      .on(events.click, '.first', $.proxy(this.first, this))
-      .on(events.click, '.last',  $.proxy(this.last,  this))
+      .on(this.events.click, '.next',  $.proxy(this.next,  this))
+      .on(this.events.click, '.prev',  $.proxy(this.prev,  this))
+      .on(this.events.click, '.first', $.proxy(this.first, this))
+      .on(this.events.click, '.last',  $.proxy(this.last,  this))
 
     // recalculate dimension on window resize or orientation change
     $(window).bind('resize', $.proxy(this.setup, this))
@@ -123,10 +129,9 @@ SwipeSlide.prototype = {
   },
     
   callback: function(){
-    var i = this.currentPage * this.options.visibleSlides
-    var visibleSlides = this.slides.slice(i, i+this.options.visibleSlides)
+    if (this.options.bulletNavigation) this.setActiveBullet()
     // call user defined callback function with the currentPage number and an array of visible slides
-    if ($.isFunction(this.options.onChange)) this.options.onChange(this.currentPage, visibleSlides)
+    if ($.isFunction(this.options.onChange)) this.options.onChange(this, this.currentPage, this.visibleSlides())
   },
 
   trackTouch: function(e) {
@@ -141,6 +146,33 @@ SwipeSlide.prototype = {
     } catch(e) {
       return 0
     }
+  },
+  
+  visibleSlides: function(){
+    return this.slides.slice(this.currentPage, this.currentPage+this.options.visibleSlides)
+  },
+
+
+  /* prev/next navigation */
+  setupDirectionalNavigation: function() {
+    this.container.append('<ul class="ui-swipeslide-nav"><li class="prev">Previous</li><li class="next">Next</li></ul>')
+  },
+  
+  /* bullet navigation */
+  setupBulletNavigation: function() {
+    this.navBullets = $('<ul class="ui-swipeslide-bullets"></ul>')
+    for (i=0; i<this.numPages; i++) this.navBullets.append('<li data-index="'+i+'">'+(i+1)+'</li>')
+    if (this.options.bulletNavigation == 'link') {
+      this.navBullets.on(this.events.click, 'li', $.proxy(function(e){
+        this.page($(e.currentTarget).data('index'))
+        this.setActiveBullet()
+      }, this))
+    }
+    this.container.append(this.navBullets)
+    this.setActiveBullet()
+  },
+  setActiveBullet: function() {
+    this.navBullets.children('li').removeClass('active').eq(this.currentPage).addClass('active')
   }
 }
 
