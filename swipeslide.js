@@ -175,7 +175,7 @@ $.extend(SwipeSlide3D.prototype, {
   },
   animationProperties: function(distance) {
     var vectors = [0,0,0]; vectors[this.options.vertical?0:1] = 1;
-    var delta = (this.alpha * distance / this.dimension) - (this.alpha * this.currentPage) - (this.revolution * 360 / this.alpha)
+    var delta = (this.alpha * distance / this.dimension) - (this.alpha * this.currentPage) - (this.revolution * 360)
     return { translate3d: '0,0,'+ -this.radius + 'px', rotate3d: vectors.join(',') +','+ delta + 'deg' }
   },
   positionSlide: function(i, slide){
