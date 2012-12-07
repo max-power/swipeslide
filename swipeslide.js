@@ -190,7 +190,7 @@ $.extend(SwipeSlide3D.prototype, {
 // zepto plugin
 ;(function($) {
   $.fn.swipeSlide = function(options) {
-    var klass = options.threeD ? SwipeSlide3D : SwipeSlide
+    var klass = (options=options||{}).threeD ? SwipeSlide3D : SwipeSlide
     return this.each(function() { new klass(this, options) })
   }
 })(window.Zepto)
