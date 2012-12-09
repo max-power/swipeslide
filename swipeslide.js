@@ -120,6 +120,7 @@ SwipeSlide.prototype = {
   },
     
   touchEnd: function(e){
+    if (!this.touch.start && !this.touch.end) return
     var distance = this.distance()
     if (Math.abs(distance) > this.tolerance) {
       distance < 0 ? this.next() : this.prev()

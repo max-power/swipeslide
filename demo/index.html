@@ -106,9 +106,9 @@
   </style>
   <script type="text/javascript">
   $(document).ready(function() {
-    $('#g1').swipeSlide({});
+    $('#g1').swipeSlide({autoPlay: 3});
     $('#g2').swipeSlide({vertical: true});
-    $('#g3').swipeSlide({threeD: true, vertical: false, first: 3});
+    $('#g3').swipeSlide({threeD: true, vertical: false, first: 3, autoPlay: 1});
     $('#g1 figure').bind('tap dblclick', function(e){
       $(this).find('figcaption').toggleClass('active');
     })
