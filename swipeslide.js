@@ -5,6 +5,7 @@ var SwipeSlide = function(container, options){
     vertical: false,              // horizontal or vertical
     tolerance:0.5,                // values between 0 and 1, where 1 means you have to drag to the center of the slide (a value of 1 equals the ios behaviour)
     delay: 0.3,                   // animation speed in seconds,
+    autoPlay: false,              // false, or value in seconds to start auto slideshow
     useTranslate3d: true,
     bulletNavigation: 'link',    // false, true or 'link' (event handlers will be attached)
     directionalNavigation: false,  // will inset previous and next links
@@ -23,17 +24,21 @@ var SwipeSlide = function(container, options){
   if (this.options.directionalNavigation) this.setupDirectionalNavigation()
   this.setup()
   this.addEventListeners()
+  if (this.options.autoPlay) this.autoPlay()
 }
 
 SwipeSlide.prototype = {
   // public
   page: function(index) {
+    this.stopAutoPlay()
     var newPage = this.validPage(index), callback
     // only set callback function if a slide happend
     if (this.currentPage != newPage) {
       callback = $.proxy(this.callback, this)
       this.currentPage = newPage
       if (this.options.bulletNavigation) this.setActiveBullet()
+    } else if (this.options.autoPlay){
+      callback = $.proxy(this.autoPlay, this)
     }
     this.move(0, this.options.delay, callback)
   },
@@ -103,6 +108,7 @@ SwipeSlide.prototype = {
     
   touchStart: function(e){
     if (!this.touch.start) this.touch.start = this.trackTouch(e)
+    this.stopAutoPlay()
     return false
   },
     
@@ -133,6 +139,17 @@ SwipeSlide.prototype = {
   callback: function(){
     // call user defined callback function with the currentPage number and an array of visible slides
     if ($.isFunction(this.options.onChange)) this.options.onChange(this, this.currentPage, this.visibleSlides())
+    if (this.options.autoPlay) this.autoPlay()
+  },
+  
+  autoPlay: function(){
+    var fn = this.isLast() ? this.first : this.next
+    this.timeout = setTimeout($.proxy(fn, this), this.options.autoPlay * 1000) 
+  },
+  
+  stopAutoPlay: function(){
+    clearTimeout(this.timeout)
+    this.timeout = null
   },
 
   trackTouch: function(e) {
