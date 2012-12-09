@@ -103,7 +103,7 @@ SwipeSlide.prototype = {
     
   touchStart: function(e){
     if (!this.touch.start) this.touch.start = this.trackTouch(e)
-    e.preventDefault()
+    return false
   },
     
   touchMove: function(e){
@@ -116,7 +116,7 @@ SwipeSlide.prototype = {
       distance /= 1 + Math.abs(distance) / this.dimension
     }
     this.move(distance, 0)
-    e.preventDefault()
+    return false
   },
     
   touchEnd: function(e){
