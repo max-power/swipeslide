@@ -182,7 +182,7 @@ SwipeSlide.prototype = {
     for (i=0; i<this.numPages; i++) this.navBullets.append('<li data-index="'+i+'">'+(i+1)+'</li>')
     if (this.options.bulletNavigation == 'link') {
       this.navBullets.on(this.events.click, 'li', $.proxy(function(e){
-        this.page($(e.currentTarget).data('index'))
+        this.page(parseInt($(e.currentTarget).data('index'), 10))
       }, this))
     }
     this.container.append(this.navBullets)
