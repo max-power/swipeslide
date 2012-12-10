@@ -21,10 +21,10 @@ var SwipeSlide = function(container, options){
   this.isTouch     = 'ontouchstart' in document.documentElement
   this.touch       = {}
   
-  if (this.options.bulletNavigation) this.setupBulletNavigation()
-  if (this.options.directionalNavigation) this.setupDirectionalNavigation()
   this.setup()
   this.addEventListeners()
+  if (this.options.directionalNavigation) this.setupDirectionalNavigation()
+  if (this.options.bulletNavigation) this.setupBulletNavigation()
   if (this.options.autoPlay) this.autoPlay()
 }
 
@@ -217,9 +217,7 @@ $.extend(SwipeSlide3D.prototype, {
     $(slide).animate({ rotate3d: this.vectorsWithDeg(i*this.alpha), translate3d: '0,0,'+this.radius+'px' }, {duration: 0})
   },
   vectorsWithDeg: function(degree){
-    var vectors = [0,0,0]; vectors[+!this.isVertical] = 1
-    vectors.push(degree+'deg')
-    return vectors.join(',')
+    return (this.isVertical ? '1,0' : '0,1') + ',0,' + degree + 'deg'
   }
 })
 
