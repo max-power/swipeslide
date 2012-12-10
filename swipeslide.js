@@ -44,21 +44,18 @@ SwipeSlide.prototype = {
     }
     this.move(0, this.options.delay, callback)
   },
-  first:   function(){ this.page(0) },
-  next:    function(){ this.page(this.currentPage+1) },
-  prev:    function(){ this.page(this.currentPage-1) },
-  last:    function(){ this.page(this.numPages-1) },
-  isFirst: function(){ return this.currentPage == 0 },
-  isLast:  function(){ return this.currentPage == this.numPages-1 },
+  first:     function(){ this.page(0) },
+  next:      function(){ this.page(this.currentPage+1) },
+  prev:      function(){ this.page(this.currentPage-1) },
+  last:      function(){ this.page(this.numPages-1) },
+  isFirst:   function(){ return this.currentPage == 0 },
+  isLast:    function(){ return this.currentPage == this.numPages-1 },
   validPage: function(num){ return Math.max(Math.min(num, this.numPages-1), 0) },
-  autoPlay: function(){
+  autoPlay:  function(){
     var fn = this.isLast() ? this.first : this.next
     this.timeout = setTimeout($.proxy(fn, this), this.options.autoPlay * 1000) 
   },
-  stopAutoPlay: function(){
-    clearTimeout(this.timeout)
-    this.timeout = null
-  },
+  stopAutoPlay:  function(){ clearTimeout(this.timeout) },
   visibleSlides: function(){
     return this.slides.slice(this.currentPage, this.currentPage+this.options.visibleSlides)
   },
