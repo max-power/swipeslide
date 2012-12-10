@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Swipeslide by max-power</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Swipeslide</h1>
+        <p>A Zepto Plugin for iOS like swipe navigation.</p>
+
+        <p class="view"><a href="https://github.com/max-power/swipeslide">View the Project on GitHub <small>max-power/swipeslide</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/max-power/swipeslide/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/max-power/swipeslide/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/max-power/swipeslide">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>SwipeSlide</h1>
+
+<p>A Zepto Plugin for iOS like swipe navigation. WebKit only.</p>
+
+<h2>Usage</h2>
+
+<div class="highlight"><pre><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"container"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ul&gt;</span>
+    <span class="nt">&lt;li</span> <span class="na">style=</span><span class="s">"background: #f00;"</span><span class="nt">&gt;</span>1<span class="nt">&lt;/li&gt;</span>
+    <span class="nt">&lt;li</span> <span class="na">style=</span><span class="s">"background: #0f0;"</span><span class="nt">&gt;</span>2<span class="nt">&lt;/li&gt;</span>
+    <span class="nt">&lt;li</span> <span class="na">style=</span><span class="s">"background: #00f;"</span><span class="nt">&gt;</span>3<span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;/ul&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+
+
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"zepto.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"swipeslide.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"swipeslide.css"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span><span class="nt">&gt;</span>
+  <span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">'#container'</span><span class="p">).</span><span class="nx">swipeSlide</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/script&gt;</span>
+</pre></div>
+
+<h2>Options</h2>
+
+<p>You may pass some options to the swipeSlide function:</p>
+
+<div class="highlight"><pre><span class="p">{</span>
+  <span class="nx">contentSelector</span><span class="o">:</span> <span class="s1">'ul'</span><span class="p">,</span>        <span class="c1">// parent element of the slides</span>
+  <span class="nx">vertical</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>              <span class="c1">// horizontal or vertical</span>
+  <span class="nx">tolerance</span><span class="o">:</span><span class="mf">0.3</span><span class="p">,</span>                <span class="c1">// values between 0 and 1, where 1 means you have to drag to the center of the slide</span>
+  <span class="nx">delay</span><span class="o">:</span> <span class="mf">0.3</span><span class="p">,</span>                   <span class="c1">// animation speed in seconds</span>
+  <span class="nx">bulletNavigation</span><span class="o">:</span> <span class="s1">'link'</span><span class="p">,</span>     <span class="c1">// false, true or link (event handlers will be attached)</span>
+  <span class="nx">directionalNavigation</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="c1">// will inset previous and next links</span>
+  <span class="nx">touchNavigation</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>        <span class="c1">// will bind touch events. you don't need this if you don't develop for iOS devices.</span>
+  <span class="nx">fancyCursor</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>            <span class="c1">// this you won't see on touch based devises.</span>
+  <span class="nx">threeD</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>                <span class="c1">// 3D Carousel instead of linear slider</span>
+  <span class="nx">preventDefault</span><span class="o">:</span> <span class="kc">true</span> <span class="p">,</span>        <span class="c1">// prevent horizontal or vertical scroll event</span>
+  <span class="nx">visibleSlides</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>             <span class="c1">// number of slides visible at the same time</span>
+  <span class="nx">change</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>    <span class="c1">// after slide transition callback</span>
+<span class="p">}</span>
+</pre></div>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/max-power">max-power</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
