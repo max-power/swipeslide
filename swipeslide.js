@@ -114,7 +114,7 @@ SwipeSlide.prototype = {
       .on(this.events.click, '.last',  $.proxy(this.last,  this))
 
     // recalculate dimension on window resize or orientation change
-    $(window).bind('resize', $.proxy(this.setup, this))
+    $(window).on('resize', $.proxy(this.setup, this))
   },
     
   touchStart: function(e){
