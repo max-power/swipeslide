@@ -81,8 +81,7 @@ SwipeSlide.prototype = {
   animationProperties: function(distance) {
     var position = -this.currentPage * this.dimension + distance + 'px', props = {}
     if (this.options.useTranslate3d) {
-      var vectors=[0,0,0]; vectors[+this.isVertical] = position
-      props['translate3d'] = vectors.join(',')
+      props['translate3d'] = (this.isVertical ? '0,'+position : position+',0') + ',0'
     } else {
       props[this.isVertical ? 'translateY' : 'translateX'] = position
     }
