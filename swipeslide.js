@@ -125,7 +125,7 @@ SwipeSlide.prototype = {
     }
     if (!this.isScroll) {
       this.stopAutoPlay()
-      this.move(this.withResistance(distance), 0, null)
+      this.move(this.withResistance(distance), 0)
       return false
     }
   },
