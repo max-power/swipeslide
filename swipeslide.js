@@ -14,7 +14,7 @@ var SwipeSlide = function(container, options){
   }, options)
 
   this.isVertical  = !!this.options.vertical
-  this.container   = $(container).addClass('ui-swipeslide').addClass('ui-swipeslide-'+['horizontal','vertical'][+this.isVertical])
+  this.container   = $(container).addClass('ui-swipeslide').addClass('ui-swipeslide-'+(this.isVertical ? 'vertical' : 'horizontal'))
   this.reel        = this.container.children().first().addClass('ui-swipeslide-reel')
   this.slides      = this.reel.children().addClass('ui-swipeslide-slide')
   this.numPages    = Math.ceil(this.slides.length / this.options.visibleSlides)
