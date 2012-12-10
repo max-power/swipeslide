@@ -12,11 +12,12 @@ var SwipeSlide = function(container, options){
     onChange: null,              // after slide transition callback
   }, options)
 
-  this.container   = $(container).addClass('ui-swipeslide').addClass('ui-swipeslide-'+['horizontal','vertical'][+this.options.vertical])
+  this.container   = $(container).addClass('ui-swipeslide').addClass('ui-swipeslide-'+['horizontal','vertical'][+this.isVertical])
   this.reel        = this.container.children().first().addClass('ui-swipeslide-reel')
   this.slides      = this.reel.children().addClass('ui-swipeslide-slide')
   this.numPages    = Math.ceil(this.slides.length / this.options.visibleSlides)
   this.currentPage = this.validPage(this.options.first)
+  this.isVertical  = !!this.options.vertical
   this.isTouch     = 'ontouchstart' in document.documentElement
   this.touch       = {}
   
@@ -49,8 +50,26 @@ SwipeSlide.prototype = {
   isFirst: function(){ return this.currentPage == 0 },
   isLast:  function(){ return this.currentPage == this.numPages-1 },
   validPage: function(num){ return Math.max(Math.min(num, this.numPages-1), 0) },
-    
+  autoPlay: function(){
+    var fn = this.isLast() ? this.first : this.next
+    this.timeout = setTimeout($.proxy(fn, this), this.options.autoPlay * 1000) 
+  },
+  stopAutoPlay: function(){
+    clearTimeout(this.timeout)
+    this.timeout = null
+  },
+  visibleSlides: function(){
+    return this.slides.slice(this.currentPage, this.currentPage+this.options.visibleSlides)
+  },
+  
   // private
+  events: {
+    start: this.isTouch ? 'touchstart' : 'mousedown',
+    move:  this.isTouch ? 'touchmove'  : 'mousemove',
+    end:   this.isTouch ? 'touchend touchcancel' : 'mouseup mouseout mouseleave',
+    click: this.isTouch ? 'touchend' : 'click'
+  },
+  
   move: function(distance, delay, callback) {
     this.reel.animate(this.animationProperties(distance), { 
       duration: delay * 1000, 
@@ -62,16 +81,16 @@ SwipeSlide.prototype = {
   animationProperties: function(distance) {
     var position = -this.currentPage * this.dimension + distance + 'px', props = {}
     if (this.options.useTranslate3d) {
-      var vectors=[0,0,0]; vectors[+this.options.vertical] = position
+      var vectors=[0,0,0]; vectors[+this.isVertical] = position
       props['translate3d'] = vectors.join(',')
     } else {
-      props[this.options.vertical ? 'translateY' : 'translateX'] = position
+      props[this.isVertical ? 'translateY' : 'translateX'] = position
     }
     return props
   },
     
   setup: function(){
-    var fn = this.options.vertical ? 'height' : 'width'
+    var fn = this.isVertical ? 'height' : 'width'
     this.dimension = this.container[fn]()
     this.tolerance = this.options.tolerance * this.dimension / 2
     // set height or width of reel and slides
@@ -80,14 +99,7 @@ SwipeSlide.prototype = {
     // move to first slide without animation
     this.move(0,0)
   },
-  
-  events: {
-    start: this.isTouch ? 'touchstart' : 'mousedown',
-    move:  this.isTouch ? 'touchmove'  : 'mousemove',
-    end:   this.isTouch ? 'touchend touchcancel' : 'mouseup mouseout mouseleave',
-    click: this.isTouch ? 'touchend' : 'click'
-  },
-    
+
   addEventListeners: function(){
     // bind listeners for touch movement
     this.reel
@@ -141,16 +153,6 @@ SwipeSlide.prototype = {
     if ($.isFunction(this.options.onChange)) this.options.onChange(this, this.currentPage, this.visibleSlides())
     if (this.options.autoPlay) this.autoPlay()
   },
-  
-  autoPlay: function(){
-    var fn = this.isLast() ? this.first : this.next
-    this.timeout = setTimeout($.proxy(fn, this), this.options.autoPlay * 1000) 
-  },
-  
-  stopAutoPlay: function(){
-    clearTimeout(this.timeout)
-    this.timeout = null
-  },
 
   trackTouch: function(e) {
     var o = this.isTouch ? e.touches[0] : e
@@ -158,18 +160,9 @@ SwipeSlide.prototype = {
   },
   
   distance: function() {
-    try {
-      var d = this.options.vertical ? 'y' : 'x'
-      return this.touch.end[d] - this.touch.start[d]
-    } catch(e) {
-      return 0
-    }
+    var d = this.isVertical ? 'y' : 'x'
+    try { return this.touch.end[d] - this.touch.start[d] } catch(e) { return 0 }
   },
-  
-  visibleSlides: function(){
-    return this.slides.slice(this.currentPage, this.currentPage+this.options.visibleSlides)
-  },
-
 
   /* prev/next navigation */
   setupDirectionalNavigation: function() {
@@ -197,7 +190,7 @@ SwipeSlide.prototype = {
 
 var SwipeSlide3D = function(container, options) {
   SwipeSlide.call(this, container, options)
-  this.alpha = 360/this.slides.length * (this.options.vertical ? -1 : 1)
+  this.alpha = 360/this.slides.length * (this.isVertical ? -1 : 1)
   this.revolution = 0
   this.radius = 0
   this.container.addClass('ui-swipeslide-3d')
@@ -207,7 +200,7 @@ SwipeSlide3D.prototype = new SwipeSlide
 
 $.extend(SwipeSlide3D.prototype, {
   setup: function() {
-    var fn = this.options.vertical ? 'height' : 'width'
+    var fn = this.isVertical ? 'height' : 'width'
     this.dimension = this.container[fn]()
     this.tolerance = this.options.tolerance * this.dimension / 2
     this.radius = Math.round( (this.dimension/2) / Math.tan(Math.PI / this.slides.length) );
@@ -223,12 +216,12 @@ $.extend(SwipeSlide3D.prototype, {
     return num
   },
   animationProperties: function(distance) {
-    var vectors = [0,0,0]; vectors[+!this.options.vertical] = 1;
+    var vectors = [0,0,0]; vectors[+!this.isVertical] = 1;
     var delta = (this.alpha * distance / this.dimension) - (this.alpha * this.currentPage) - (this.revolution * 360)
     return { translate3d: '0,0,'+ -this.radius + 'px', rotate3d: vectors.join(',') +','+ delta + 'deg' }
   },
   positionSlide: function(i, slide){
-    var vectors = [0,0,0]; vectors[+!this.options.vertical] = 1;
+    var vectors = [0,0,0]; vectors[+!this.isVertical] = 1;
     $(slide).animate({
       rotate3d: vectors.join(',')+','+ (this.alpha * i)+'deg', 
       translate3d: '0,0,'+this.radius+'px'
