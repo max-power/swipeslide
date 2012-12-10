@@ -59,10 +59,14 @@ SwipeSlide.prototype = {
   isLast:    function(){ return this.currentPage == this.numPages-1 },
   validPage: function(num){ return Math.max(Math.min(num, this.numPages-1), 0) },
   autoPlay:  function(){
+    if (this.timeout) return false
     var fn = this.isLast() ? this.first : this.next
     this.timeout = setTimeout($.proxy(fn, this), this.options.autoPlay * 1000) 
   },
-  stopAutoPlay:  function(){ clearTimeout(this.timeout) },
+  stopAutoPlay:  function(){ 
+    clearTimeout(this.timeout)
+    delete this.timeout 
+  },
   visibleSlides: function(){
     return this.slides.slice(this.currentPage, this.currentPage+this.options.visibleSlides)
   },
