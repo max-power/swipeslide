@@ -20,9 +20,14 @@ var SwipeSlide = function(container, options){
   this.slides      = this.reel.children().addClass('ui-swipeslide-slide')
   this.numPages    = Math.ceil(this.slides.length / this.options.visibleSlides)
   this.currentPage = this.validPage(this.options.first)
+  this.touch       = {}
   this.isTouch     = 'ontouchstart' in document.documentElement
-  this.touch       = null
-  
+  this.events      = {
+    start: this.isTouch ? 'touchstart' : 'mousedown',
+    move:  this.isTouch ? 'touchmove'  : 'mousemove',
+    end:   this.isTouch ? 'touchend touchcancel' : 'mouseup mouseout mouseleave',
+    click: this.isTouch ? 'touchend' : 'click'
+  }
   this.setup()
   this.addEventListeners()
   if (this.options.directionalNavigation) this.setupDirectionalNavigation()
@@ -63,13 +68,6 @@ SwipeSlide.prototype = {
   },
   
   // private
-  events: {
-    start: this.isTouch ? 'touchstart' : 'mousedown',
-    move:  this.isTouch ? 'touchmove'  : 'mousemove',
-    end:   this.isTouch ? 'touchend touchcancel' : 'mouseup mouseout mouseleave',
-    click: this.isTouch ? 'touchend' : 'click'
-  },
-  
   move: function(distance, delay, callback) {
     this.reel.animate(this.animationProperties(distance), { duration: delay * 1000, easing: this.options.easing, complete: callback })
   },
@@ -115,25 +113,26 @@ SwipeSlide.prototype = {
     
   touchStart: function(e){
     this.stopAutoPlay()
-    this.touch = this.trackTouch(e)
+    this.touch.start = this.trackTouch(e)
     return false
   },
     
   touchMove: function(e){
-    if (!this.touch) return
-    this.move(this.withResistance(this.distance(this.trackTouch(e))), 0)
+    if (!this.touch.start) return
+    this.touch.end = this.trackTouch(e)
+    this.move(this.withResistance(this.distance()), 0)
     return false
   },
     
   touchEnd: function(e){
-    if (!this.touch) return
-    var distance = this.distance(this.trackTouch(e))
+    if (!this.touch.start || !this.touch.end) return
+    var distance = this.distance()
     if (Math.abs(distance) > this.tolerance) {
       distance < 0 ? this.next() : this.prev()
     } else {
       this.page(this.currentPage)
     }
-    this.touch = null
+    this.touch = {}
   },
 
   trackTouch: function(e) {
@@ -141,9 +140,9 @@ SwipeSlide.prototype = {
     return { x: o.pageX, y: o.pageY, t: +new Date() }
   },
   
-  distance: function(touch) {
+  distance: function() {
     var d = this.isVertical ? 'y' : 'x'
-    return touch[d] - this.touch[d]
+    return this.touch.end[d] - this.touch.start[d]
   },
   
   withResistance: function(d){
