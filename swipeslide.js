@@ -20,7 +20,7 @@ var SwipeSlide = function(container, options){
   this.numPages    = Math.ceil(this.slides.length / this.options.visibleSlides)
   this.currentPage = this.validPage(this.options.first)
   this.isTouch     = 'ontouchstart' in document.documentElement
-  this.touch       = {}
+  this.touch       = null
   
   this.setup()
   this.addEventListeners()
@@ -112,27 +112,26 @@ SwipeSlide.prototype = {
   },
     
   touchStart: function(e){
-    if (!this.touch.start) this.touch.start = this.trackTouch(e)
     this.stopAutoPlay()
+    this.touch = this.trackTouch(e)
     return false
   },
     
   touchMove: function(e){
-    if (!this.touch.start) return
-    this.touch.end = this.trackTouch(e)
-    this.move(this.withResistance(this.distance()), 0)
+    if (!this.touch) return
+    this.move(this.withResistance(this.distance(this.trackTouch(e))), 0)
     return false
   },
     
   touchEnd: function(e){
-    if (!this.touch.start && !this.touch.end) return
-    var distance = this.distance()
+    if (!this.touch) return
+    var distance = this.distance(this.trackTouch(e))
     if (Math.abs(distance) > this.tolerance) {
       distance < 0 ? this.next() : this.prev()
     } else {
       this.page(this.currentPage)
     }
-    this.touch = {}
+    this.touch = null
   },
 
   trackTouch: function(e) {
@@ -140,9 +139,9 @@ SwipeSlide.prototype = {
     return { x: o.pageX, y: o.pageY, t: +new Date() }
   },
   
-  distance: function() {
+  distance: function(touch) {
     var d = this.isVertical ? 'y' : 'x'
-    try { return this.touch.end[d] - this.touch.start[d] } catch(e) { return 0 }
+    return touch[d] - this.touch[d]
   },
   
   withResistance: function(d){
