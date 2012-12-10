@@ -120,7 +120,7 @@ SwipeSlide.prototype = {
   touchMove: function(e){
     if (!this.touch.start) return
     this.touch.end = this.trackTouch(e)
-    this.move(this.distanceWithResistance(), 0)
+    this.move(this.withResistance(this.distance()), 0)
     return false
   },
     
@@ -145,8 +145,7 @@ SwipeSlide.prototype = {
     try { return this.touch.end[d] - this.touch.start[d] } catch(e) { return 0 }
   },
   
-  distanceWithResistance: function(){
-    var d = this.distance()
+  withResistance: function(d){
     if (this.isFirst() && d > 0 || this.isLast() && d < 0) d /= (1 + Math.abs(d) / this.dimension)
     return d
   },
@@ -212,7 +211,7 @@ $.extend(SwipeSlide3D.prototype, {
   vectorsWithDeg: function(degree){
     return (this.isVertical ? '1,0' : '0,1') + ',0,' + degree + 'deg'
   },
-  distanceWithResistance: function() {return this.distance()} // no resistance for 3d
+  withResistance: function(d) {return d} // no resistance for 3d
 })
 
 // zepto plugin
