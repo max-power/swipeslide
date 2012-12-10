@@ -5,10 +5,11 @@ var SwipeSlide = function(container, options){
     vertical: false,              // horizontal or vertical
     tolerance:0.5,                // values between 0 and 1, where 1 means you have to drag to the center of the slide (a value of 1 equals the ios behaviour)
     delay: 0.3,                   // animation speed in seconds,
+    easing: 'ease-out',           // the easing function
     autoPlay: false,              // false, or value in seconds to start auto slideshow
     useTranslate3d: true,
-    bulletNavigation: 'link',     // false, true or 'link' (event handlers will be attached)
-    directionalNavigation: false, // will inset previous and next links
+    bulletNavigation: 'link',     // will insert bullet navigation: false, true or 'link' (event handlers will be attached)
+    directionalNavigation: false, // will insert previous and next links
     onChange: null                // after slide transition callback
   }, options)
 
@@ -71,11 +72,7 @@ SwipeSlide.prototype = {
   },
   
   move: function(distance, delay, callback) {
-    this.reel.animate(this.animationProperties(distance), { 
-      duration: delay * 1000, 
-      easing: 'ease-out', 
-      complete: callback
-    })
+    this.reel.animate(this.animationProperties(distance), { duration: delay * 1000, easing: this.options.easing, complete: callback })
   },
 
   animationProperties: function(distance) {
