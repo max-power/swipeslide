@@ -7,17 +7,17 @@ var SwipeSlide = function(container, options){
     delay: 0.3,                   // animation speed in seconds,
     autoPlay: false,              // false, or value in seconds to start auto slideshow
     useTranslate3d: true,
-    bulletNavigation: 'link',    // false, true or 'link' (event handlers will be attached)
-    directionalNavigation: false,  // will inset previous and next links
-    onChange: null,              // after slide transition callback
+    bulletNavigation: 'link',     // false, true or 'link' (event handlers will be attached)
+    directionalNavigation: false, // will inset previous and next links
+    onChange: null                // after slide transition callback
   }, options)
 
+  this.isVertical  = !!this.options.vertical
   this.container   = $(container).addClass('ui-swipeslide').addClass('ui-swipeslide-'+['horizontal','vertical'][+this.isVertical])
   this.reel        = this.container.children().first().addClass('ui-swipeslide-reel')
   this.slides      = this.reel.children().addClass('ui-swipeslide-slide')
   this.numPages    = Math.ceil(this.slides.length / this.options.visibleSlides)
   this.currentPage = this.validPage(this.options.first)
-  this.isVertical  = !!this.options.vertical
   this.isTouch     = 'ontouchstart' in document.documentElement
   this.touch       = {}
   
@@ -147,12 +147,6 @@ SwipeSlide.prototype = {
     }
     this.touch = {}
   },
-    
-  callback: function(){
-    // call user defined callback function with the currentPage number and an array of visible slides
-    if ($.isFunction(this.options.onChange)) this.options.onChange(this, this.currentPage, this.visibleSlides())
-    if (this.options.autoPlay) this.autoPlay()
-  },
 
   trackTouch: function(e) {
     var o = this.isTouch ? e.touches[0] : e
@@ -162,6 +156,12 @@ SwipeSlide.prototype = {
   distance: function() {
     var d = this.isVertical ? 'y' : 'x'
     try { return this.touch.end[d] - this.touch.start[d] } catch(e) { return 0 }
+  },
+  
+  callback: function(){
+    // call user defined callback function with the currentPage number and an array of visible slides
+    if ($.isFunction(this.options.onChange)) this.options.onChange(this, this.currentPage, this.visibleSlides())
+    if (this.options.autoPlay) this.autoPlay()
   },
 
   /* prev/next navigation */
@@ -190,11 +190,7 @@ SwipeSlide.prototype = {
 
 var SwipeSlide3D = function(container, options) {
   SwipeSlide.call(this, container, options)
-  this.alpha = 360/this.slides.length * (this.isVertical ? -1 : 1)
-  this.revolution = 0
-  this.radius = 0
   this.container.addClass('ui-swipeslide-3d')
-  this.setup()
 }
 SwipeSlide3D.prototype = new SwipeSlide
 
@@ -203,29 +199,27 @@ $.extend(SwipeSlide3D.prototype, {
     var fn = this.isVertical ? 'height' : 'width'
     this.dimension = this.container[fn]()
     this.tolerance = this.options.tolerance * this.dimension / 2
-    this.radius = Math.round( (this.dimension/2) / Math.tan(Math.PI / this.slides.length) );
+    this.alpha     = 360/this.slides.length * (this.isVertical ? -1 : 1)
+    this.radius    = Math.round((this.dimension/2) / Math.tan(Math.PI / this.slides.length))
     this.slides.each($.proxy(this.positionSlide, this))
     this.move(0,0)
   },
-  validPage: function(num){ 
-    if (num < 0) {
-      num += this.numPages; this.revolution--
-    } else if (num >= this.numPages) {
-      num %= this.numPages; this.revolution++
-    }
+  validPage: function(num){    
+    if (num < 0) num += this.numPages
+    else if (num >= this.numPages) num %= this.numPages
     return num
   },
   animationProperties: function(distance) {
-    var vectors = [0,0,0]; vectors[+!this.isVertical] = 1;
-    var delta = (this.alpha * distance / this.dimension) - (this.alpha * this.currentPage) - (this.revolution * 360)
-    return { translate3d: '0,0,'+ -this.radius + 'px', rotate3d: vectors.join(',') +','+ delta + 'deg' }
+    var delta = (this.alpha * distance / this.dimension) - (this.alpha * this.currentPage)
+    return { translate3d: '0,0,'+ -this.radius + 'px', rotate3d: this.vectorsWithDeg(delta) }
   },
   positionSlide: function(i, slide){
-    var vectors = [0,0,0]; vectors[+!this.isVertical] = 1;
-    $(slide).animate({
-      rotate3d: vectors.join(',')+','+ (this.alpha * i)+'deg', 
-      translate3d: '0,0,'+this.radius+'px'
-    }, {duration: 0})
+    $(slide).animate({ rotate3d: this.vectorsWithDeg(i*this.alpha), translate3d: '0,0,'+this.radius+'px' }, {duration: 0})
+  },
+  vectorsWithDeg: function(degree){
+    var vectors = [0,0,0]; vectors[+!this.isVertical] = 1
+    vectors.push(degree+'deg')
+    return vectors.join(',')
   }
 })
 
