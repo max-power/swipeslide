@@ -106,9 +106,26 @@
   </style>
   <script type="text/javascript">
   $(document).ready(function() {
-    $('#g1').swipeSlide({autoPlay: 3});
+    $('#g1').swipeSlide({autoPlay: 6,
+      beforeChange: function(instance, oldIndex, newIndex){
+        instance.visibleSlides().find('figcaption').removeClass('active')
+      },
+      afterChange: function(instance, newIndex){
+        instance.visibleSlides().find('figcaption').addClass('active')
+      }
+    });
     $('#g2').swipeSlide({vertical: true});
-    $('#g3').swipeSlide({threeD: true, vertical: false, first: 3, autoPlay: 1});
+    $('#g3').swipeSlide({
+      threeD: true, 
+      first: 3, 
+      autoPlay: 2,
+      beforeChange: function(instance, oldIndex, newIndex){
+        instance.visibleSlides().removeClass('active')
+      },
+      afterChange: function(instance, newIndex){
+        instance.visibleSlides().addClass('active')
+      }
+    });
     $('#g1 figure').bind('tap dblclick', function(e){
       $(this).find('figcaption').toggleClass('active');
     })

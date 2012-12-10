@@ -10,7 +10,8 @@ var SwipeSlide = function(container, options){
     useTranslate3d: true,
     bulletNavigation: 'link',     // will insert bullet navigation: false, true or 'link' (event handlers will be attached)
     directionalNavigation: false, // will insert previous and next links
-    onChange: null                // after slide transition callback
+    beforeChange: null,
+    afterChange: null                // after slide transition callback
   }, options)
 
   this.isVertical  = !!this.options.vertical
@@ -36,13 +37,14 @@ SwipeSlide.prototype = {
     var newPage = this.validPage(index), callback
     // only set callback function if a slide happend
     if (this.currentPage != newPage) {
-      callback = $.proxy(this.callback, this)
+      if($.isFunction(this.options.beforeChange)) this.options.beforeChange(this, this.currentPage, newPage)
       this.currentPage = newPage
-      if (this.options.bulletNavigation) this.setActiveBullet()
+      callback = $.proxy(this.callback, this)
     } else if (this.options.autoPlay){
       callback = $.proxy(this.autoPlay, this)
     }
     this.move(0, this.options.delay, callback)
+    if (this.options.bulletNavigation) this.setActiveBullet()
   },
   first:     function(){ this.page(0) },
   next:      function(){ this.page(this.currentPage+1) },
@@ -151,7 +153,7 @@ SwipeSlide.prototype = {
   
   callback: function(){
     // call user defined callback function with the currentPage number and an array of visible slides
-    if ($.isFunction(this.options.onChange)) this.options.onChange(this, this.currentPage, this.visibleSlides())
+    if ($.isFunction(this.options.afterChange)) this.options.afterChange(this, this.currentPage)
     if (this.options.autoPlay) this.autoPlay()
   },
 
