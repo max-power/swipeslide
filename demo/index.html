@@ -106,7 +106,7 @@
   </style>
   <script type="text/javascript">
   $(document).ready(function() {
-    $('#g1').swipeSlide({autoPlay: 6,
+    $('#g1').swipeSlide({
       beforeChange: function(instance, oldIndex, newIndex){
         instance.visibleSlides().find('figcaption').removeClass('active')
       },

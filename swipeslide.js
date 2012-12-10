@@ -25,7 +25,7 @@ var SwipeSlide = function(container, options){
   this.events      = {
     start: this.isTouch ? 'touchstart' : 'mousedown',
     move:  this.isTouch ? 'touchmove'  : 'mousemove',
-    end:   this.isTouch ? 'touchend touchcancel' : 'mouseup mouseout mouseleave',
+    end:   this.isTouch ? 'touchend touchcancel touchleave' : 'mouseup mouseout mouseleave',
     click: this.isTouch ? 'touchend' : 'click'
   }
   this.setup()
@@ -112,37 +112,44 @@ SwipeSlide.prototype = {
   },
     
   touchStart: function(e){
-    this.stopAutoPlay()
     this.touch.start = this.trackTouch(e)
-    return false
+    this.isScroll = undefined
   },
     
   touchMove: function(e){
     if (!this.touch.start) return
     this.touch.end = this.trackTouch(e)
-    this.move(this.withResistance(this.distance()), 0)
-    return false
+    var distance   = this.distance(this.isVertical)
+    if (typeof this.isScroll == 'undefined') {
+      this.isScroll = Math.abs(distance) < Math.abs(this.distance(!this.isVertical))
+    }
+    if (!this.isScroll) {
+      this.stopAutoPlay()
+      this.move(this.withResistance(distance), 0, null)
+      return false
+    }
   },
     
   touchEnd: function(e){
-    if (!this.touch.start || !this.touch.end) return
-    var distance = this.distance()
+    if (this.isScroll && this.touch.start && this.touch.end) return true
+    var distance = this.distance(this.isVertical)
     if (Math.abs(distance) > this.tolerance) {
       distance < 0 ? this.next() : this.prev()
     } else {
       this.page(this.currentPage)
     }
     this.touch = {}
+    return false
   },
 
   trackTouch: function(e) {
     var o = this.isTouch ? e.touches[0] : e
-    return { x: o.pageX, y: o.pageY, t: +new Date() }
+    return { x: o.pageX, y: o.pageY }
   },
   
-  distance: function() {
-    var d = this.isVertical ? 'y' : 'x'
-    return this.touch.end[d] - this.touch.start[d]
+  distance: function(vertical) {
+    var d = vertical ? 'y' : 'x'
+    try { return this.touch.end[d] - this.touch.start[d] } catch(e) {return 0}
   },
   
   withResistance: function(d){
