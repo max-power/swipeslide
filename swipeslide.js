@@ -1,238 +1,233 @@
-(function($) {
-  $.fn.swipeSlide = function(options) {
-    // Merge passed options with defaults
-    var options = $.extend({
-      contentSelector: 'ul',        // parent element of the slides
-      vertical: false,              // horizontal or vertical
-      tolerance:0.3,                // values between 0 and 1, where 1 means you have to drag to the center of the slide
-      delay: 0.3,                   // animation speed in seconds
-      bulletNavigation: 'link',     // false, true or link (event handlers will be attached)
-      directionalNavigation: false, // will inset previous and next links
-      touchNavigation: true,        // will bind touch events. you don't need this if you don't develop for iOS devices.
-      fancyCursor: true,            // this you won't see on touch based devises.
-      threeD: false,                // 3D Carousel instead of linear slider
-      preventDefault: true ,        // prevent horizontal or vertical scroll event
-      visibleSlides: 1,             // number of slides visible at the same time
-      change: null                  // after slide transition callback
-    }, options);
+var SwipeSlide = function(container, options){
+  this.options = $.extend({
+    first: 0,                     // the first visible slide on initialization
+    visibleSlides: 1,             // number of slides visible at the same time
+    vertical: false,              // horizontal or vertical
+    tolerance:0.5,                // values between 0 and 1, where 1 means you have to drag to the center of the slide (a value of 1 equals the ios behaviour)
+    delay: 0.3,                   // animation speed in seconds,
+    easing: 'ease-out',           // the easing function
+    autoPlay: false,              // false, or value in seconds to start auto slideshow
+    useTranslate3d: true,
+    bulletNavigation: 'link',     // will insert bullet navigation: false, true or 'link' (event handlers will be attached)
+    directionalNavigation: false, // will insert previous and next links
+    beforeChange: null,
+    afterChange: null                // after slide transition callback
+  }, options)
 
-    var touchScreen = 'ontouchstart' in document.documentElement;
-
-    return this.each(function(index) {
-
-      // Initialize element variables.
-      var self = $(this),
-          reel = self.find(options.contentSelector).first(),
-          slides = reel.children();
-
-      // Do not swipeslide if no slides or multiple reels.
-      if (reel.length != 1 || slides.length <= 1) return;
-
-      // Add swipeslide css classes.
-      self.addClass('ui-swipeslide').addClass('ui-swipeslide-' + (options.vertical ? 'vertical' : 'horizontal')).addClass(options.threeD ? 'ui-swipeslide-3d' : '');
-      reel.addClass('ui-swipeslide-content');
-      slides.addClass('ui-swipeslide-slide');
-
-      // Initialize remaining variables.
-      var touch  = {}, currentSlide = 0, navBullets,
-          alpha  = 360/slides.length * (options.vertical ? -1 : 1), revolution = radius = 0,
-          // number of "screens"
-          nbBullets = Math.ceil(slides.length / options.visibleSlides);
-
-      if (options.bulletNavigation) buildBulletNavigation();
-      if (options.directionalNavigation) buildDirectionalNavigation();
-
-      init(); $(window).bind('resize', init);
-
-      /* bind touch events */
-      if (options.touchNavigation) {
-        // Save the position where the user started to touch the current slide
-        reel.bind(touchScreen ? 'touchstart' : 'mousedown', function(e) {
-          /* if (e.touches && e.touches.length > 1) return container.trigger('touchend'); */
-          if (!e.touches) e.preventDefault()
-          touch.start = getTouch(e)
-        })
-        // Save the position where the user is moving the current slide, and move it
-        .bind(touchScreen ? 'touchmove' : 'mousemove', function(e){
-          // Don't do anything if the mousedown/touchstart events didn't happen
-          if (!touch.start) return;
-          touch.end = getTouch(e)
-          var distance = swipeDistance(touch)
-          // Don't move if it's the (First slide + right swipe) or (Last slide + left swipe).
-          
-          if (!options.threeD && (currentSlide==0 && distance > 0) || (currentSlide==slides.length-1 && distance < 0)) {
-            moveSlider();
-          } else {
-            if (options.preventDefault) e.preventDefault();
-            moveSlider(distance);
-          }
-        })
-        // Save the position where the user is releasing the current slide, and move it
-        .bind(touchScreen ? 'touchend touchcancel touchleave' : 'mouseup mouseout', function(e) {
-          var distance  = swipeDistance(touch);
-          var tolerance = options.tolerance * containerDimension() / 2;
-          if (Math.abs(distance) > tolerance) {
-            currentSlide = distance < 0 ? nextSlide() : prevSlide();
-            moveSlider(0, options.delay, options.change);
-          } else {
-            moveSlider(0, options.delay);
-          }
-          // Reinitialize the touch object for the next touch events
-          touch = {};
-        });
-      }
-
-      /* bind listeners to any elments with '.prev' or '.next' class */
-      self.delegate('.next', touchScreen ? 'touchend' : 'click', function(){ currentSlide = nextSlide(); moveSlider(0, options.delay, options.change); })
-          .delegate('.prev', touchScreen ? 'touchend' : 'click', function(){ currentSlide = prevSlide(); moveSlider(0, options.delay, options.change); })
-          .delegate('.first',touchScreen ? 'touchend' : 'click', function(){ currentSlide = 0; moveSlider(0, options.delay, options.change); })
-          .delegate('.last', touchScreen ? 'touchend' : 'click', function(){ currentSlide = slides.length-1; moveSlider(0, options.delay, options.change); });
-
-      /**
-       * Initalize the slider
-       *
-       * Set css properties on the slider and the current slide
-       */
-      function init() {
-        var c = containerDimension();
-          reel.css(options.vertical ? 'height' : 'width', c * (options.threeD ? 1 : nbBullets)+'px');
-        slides.css(options.vertical ? 'height' : 'width', (c / options.visibleSlides)+'px');
-        
-        if (options.threeD) {
-          radius = Math.round( (c/2) / Math.tan(Math.PI / slides.length) );
-          slides.each(function(i, slide) {
-            var vectors = [0,0,0];
-            vectors[options.vertical ? 0 : 1] = 1;
-            $(slide).css('-webkit-transform', 'rotate3d('+vectors.join(',')+','+ (alpha * i)+'deg) translate3d(0,0,'+radius+'px)');
-          });
-        }
-        moveSlider();
-      }
-
-      /**
-       * Animate the slides
-       *
-       * @param distance Integer the distance to add to the slides movement in pixels
-       * @param delay Integer the delay in seconds before moving the slides
-       */
-      function moveSlider(distance, delay, callback) {
-        opts = { duration: ((delay || 0) * 1000), complete: callback };
-        reel.animate(animationProperties(distance || 0), opts)
-        slides.removeClass('active').eq(currentSlide).addClass('active');
-        if (options.fancyCursor && options.touchNavigation) setCursor();
-        if (options.bulletNavigation) setActiveBullet();
-      }
-
-      /**
-       * Calculate the tridimensionnal amount of movement necessary to apply to the slides
-       *
-       * @param distance Integer the distance to add to the slides movement in pixels
-       * @return Object the css properties to animate and their values
-       */
-      function animationProperties(distance) {
-        var vectors = [0,0,0];
-        if (options.threeD) {
-          var delta = (-currentSlide * alpha) - (revolution * 360) + (alpha * (distance/containerDimension()));
-          vectors[options.vertical ? 0 : 1] = 1;
-          return { translate3d: '0,0,'+ -radius + 'px', rotate3d: vectors.join(',') +','+ delta + 'deg' }
-        } else {
-          var position = -currentSlide * (containerDimension() / options.visibleSlides) + distance;
-          if (options.vertical) {
-            return { translateY: position + 'px' }
-          } else {
-            return { translateX: position + 'px' }
-          }
-        }
-      }
-
-      /**
-       * Calculate the container dimension
-       *
-       * @return Integer the container dimension in pixels
-       */
-      function containerDimension() {
-        return parseInt(self.css(options.vertical ? 'height' : 'width'), 10);
-      }
-
-      /**
-       * Calculate the distance swiped by the user
-       *
-       * @param t Object the touch object that holds the touched positions
-       * @return Integer the swiped distance in pixels
-       */
-      function swipeDistance(t) {
-        return options.vertical ? (t.end.y - t.start.y) : (t.end.x - t.start.x)
-      }
-
-      /**
-       * Calculate the index of the previous slide
-       *
-       * @return Integer the index of the previous slide
-       */
-      function prevSlide() {
-        var p = currentSlide-options.visibleSlides;
-        if (options.threeD) {
-          if (p < 0) { p = slides.length + p; revolution--; }
-          return Math.abs(p % slides.length);
-        }
-        return Math.max(p, 0);
-      }
-
-      /**
-       * Calculate the index of the next slide
-       *
-       * @return Integer the index of the next slide
-       */
-      function nextSlide() {
-        var n = currentSlide+options.visibleSlides;
-        if (options.threeD) {
-          if (n / slides.length == 1) revolution++;
-          return n % slides.length;
-        }
-        return Math.min(n, slides.length-1);
-      }
-      
-      function getTouch(e) {
-        return {
-          x: e.pageX || e.touches[0].pageX,
-          y: e.pageY || e.touches[0].pageY
-        }
-      }
-
-      /* optional fancy stuff */
-      function setCursor() {
-        var c = options.vertical ? 'ns' : 'ew';
-        if (!options.threeD) {
-          switch(currentSlide) {
-            case 0:                 c = options.vertical ? 'n' : 'w'; break;
-            case slides.length - 1: c = options.vertical ? 's' : 'e'; break;
-          }
-        }
-        reel.css('cursor', c + '-resize');
-      }
-
-      /* bullet navigation */
-      function buildBulletNavigation() {
-        var s = '';
-        for (i=0; i<nbBullets; i++) s+='<li data-index="'+(i*options.visibleSlides)+'">'+(i*options.visibleSlides+1)+'</li>';
-        navBullets = $('<ul class="ui-swipeslide-bullets"></ul>').html(s);
-        if (options.bulletNavigation == 'link') {
-          navBullets.delegate('li', touchScreen ? 'touchend' : 'click', function() {
-            currentSlide = (parseInt($(this).attr('data-index'), 10));
-            moveSlider(0, options.delay, options.change);
-          });
-        }
-        self.append(navBullets);
-      }
-
-      function setActiveBullet() {
-        navBullets.children('li').removeClass('active').eq(currentSlide/options.visibleSlides).addClass('active');
-      }
-
-      /* prev/next navigation */
-      function buildDirectionalNavigation() {
-        self.append('<ul class="ui-swipeslide-nav"><li class="prev">Previous</li><li class="next">Next</li></ul>');
-      }
-    })
+  this.isVertical  = !!this.options.vertical
+  this.container   = $(container).addClass('ui-swipeslide').addClass('ui-swipeslide-'+(this.isVertical ? 'vertical' : 'horizontal'))
+  this.reel        = this.container.children().first().addClass('ui-swipeslide-reel')
+  this.slides      = this.reel.children().addClass('ui-swipeslide-slide')
+  this.numPages    = Math.ceil(this.slides.length / this.options.visibleSlides)
+  this.currentPage = this.validPage(this.options.first)
+  this.touch       = {}
+  this.isTouch     = 'ontouchstart' in document.documentElement
+  this.events      = {
+    start: this.isTouch ? 'touchstart' : 'mousedown',
+    move:  this.isTouch ? 'touchmove'  : 'mousemove',
+    end:   this.isTouch ? 'touchend touchcancel touchleave' : 'mouseup mouseout mouseleave',
+    click: this.isTouch ? 'touchend' : 'click'
   }
-})(Zepto);
+  this.setup()
+  this.addEventListeners()
+  if (this.options.directionalNavigation) this.setupDirectionalNavigation()
+  if (this.options.bulletNavigation) this.setupBulletNavigation()
+  if (this.options.autoPlay) this.autoPlay()
+}
+
+SwipeSlide.prototype = {
+  // public
+  page: function(index) {
+    this.stopAutoPlay()
+    var newPage = this.validPage(index), callback
+    // only set callback function if a slide happend
+    if (this.currentPage != newPage) {
+      if($.isFunction(this.options.beforeChange)) this.options.beforeChange(this, this.currentPage, newPage)
+      this.currentPage = newPage
+      callback = $.proxy(this.callback, this)
+    } else if (this.options.autoPlay){
+      callback = $.proxy(this.autoPlay, this)
+    }
+    this.move(0, this.options.delay, callback)
+    if (this.options.bulletNavigation) this.setActiveBullet()
+  },
+  first:     function(){ this.page(0) },
+  next:      function(){ this.page(this.currentPage+1) },
+  prev:      function(){ this.page(this.currentPage-1) },
+  last:      function(){ this.page(this.numPages-1) },
+  isFirst:   function(){ return this.currentPage == 0 },
+  isLast:    function(){ return this.currentPage == this.numPages-1 },
+  validPage: function(num){ return Math.max(Math.min(num, this.numPages-1), 0) },
+  autoPlay:  function(){
+    if (this.timeout) return false
+    var fn = this.isLast() ? this.first : this.next
+    this.timeout = setTimeout($.proxy(fn, this), this.options.autoPlay * 1000) 
+  },
+  stopAutoPlay:  function(){ 
+    clearTimeout(this.timeout)
+    delete this.timeout 
+  },
+  visibleSlides: function(){
+    return this.slides.slice(this.currentPage, this.currentPage+this.options.visibleSlides)
+  },
+  
+  // private
+  move: function(distance, delay, callback) {
+    this.reel.animate(this.animationProperties(distance), { duration: delay * 1000, easing: this.options.easing, complete: callback })
+  },
+
+  animationProperties: function(distance) {
+    var position = -this.currentPage * this.dimension + distance + 'px', props = {}
+    if (this.options.useTranslate3d) {
+      props['translate3d'] = (this.isVertical ? '0,'+position : position+',0') + ',0'
+    } else {
+      props[this.isVertical ? 'translateY' : 'translateX'] = position
+    }
+    return props
+  },
+    
+  setup: function(){
+    var fn = this.isVertical ? 'height' : 'width'
+    this.dimension = this.container[fn]()
+    this.tolerance = this.options.tolerance * this.dimension / 2
+    // set height or width of reel and slides
+    this.reel[fn](this.dimension * this.numPages + 'px')
+    this.slides[fn](this.dimension / this.options.visibleSlides + 'px')
+    // move to first slide without animation
+    this.move(0,0)
+  },
+
+  addEventListeners: function(){
+    // bind listeners for touch movement
+    this.reel
+      .on(this.events.start, $.proxy(this.touchStart, this))
+      .on(this.events.move,  $.proxy(this.touchMove, this))
+      .on(this.events.end,   $.proxy(this.touchEnd, this))
+      
+    // bind listeners to any elments with '.prev', '.next', '.first' or '.last' class 
+    this.container
+      .on(this.events.click, '.next',  $.proxy(this.next,  this))
+      .on(this.events.click, '.prev',  $.proxy(this.prev,  this))
+      .on(this.events.click, '.first', $.proxy(this.first, this))
+      .on(this.events.click, '.last',  $.proxy(this.last,  this))
+
+    // recalculate dimension on window resize or orientation change
+    $(window).on('resize', $.proxy(this.setup, this))
+  },
+    
+  touchStart: function(e){
+    this.touch.start = this.trackTouch(e)
+    delete this.isScroll
+    if (!this.isTouch) return false
+  },
+    
+  touchMove: function(e){
+    if (!this.touch.start) return
+    this.touch.end = this.trackTouch(e)
+    var distance   = this.distance(this.isVertical)
+    if (typeof this.isScroll == 'undefined') {
+      this.isScroll = Math.abs(distance) < Math.abs(this.distance(!this.isVertical))
+    }
+    if (!this.isScroll) {
+      this.stopAutoPlay()
+      this.move(this.withResistance(distance), 0)
+      return false
+    }
+  },
+    
+  touchEnd: function(e){
+    if (!this.isScroll) {
+      var distance = this.distance(this.isVertical), add = 0
+      if (Math.abs(distance) > this.tolerance) add = distance < 0 ? 1 : -1
+      this.page(this.currentPage + add)
+    }
+    this.touch = {}
+    return false
+  },
+
+  trackTouch: function(e) {
+    var o = this.isTouch ? e.touches[0] : e
+    return { x: o.pageX, y: o.pageY }
+  },
+  
+  distance: function(vertical) {
+    var d = vertical ? 'y' : 'x'
+    try { return this.touch.end[d] - this.touch.start[d] } catch(e) {return 0}
+  },
+  
+  withResistance: function(d){
+    if (this.isFirst() && d > 0 || this.isLast() && d < 0) d /= (1 + Math.abs(d) / this.dimension)
+    return d
+  },
+  
+  callback: function(){
+    // call user defined callback function with the currentPage number and an array of visible slides
+    if ($.isFunction(this.options.afterChange)) this.options.afterChange(this, this.currentPage)
+    if (this.options.autoPlay) this.autoPlay()
+  },
+
+  /* prev/next navigation */
+  setupDirectionalNavigation: function() {
+    this.container.append('<ul class="ui-swipeslide-nav"><li class="prev">Previous</li><li class="next">Next</li></ul>')
+  },
+  
+  /* bullet navigation */
+  setupBulletNavigation: function() {
+    this.navBullets = $('<ul class="ui-swipeslide-bullets"></ul>')
+    for (i=0; i<this.numPages; i++) this.navBullets.append('<li data-index="'+i+'">'+(i+1)+'</li>')
+    if (this.options.bulletNavigation == 'link') {
+      this.navBullets.on(this.events.click, 'li', $.proxy(function(e){
+        this.page(parseInt($(e.currentTarget).data('index'), 10))
+      }, this))
+    }
+    this.container.append(this.navBullets)
+    this.setActiveBullet()
+  },
+  setActiveBullet: function() {
+    this.navBullets.children('li').removeClass('active').eq(this.currentPage).addClass('active')
+  }
+}
+
+
+
+var SwipeSlide3D = function(container, options) {
+  SwipeSlide.call(this, container, options)
+  this.container.addClass('ui-swipeslide-3d')
+}
+SwipeSlide3D.prototype = new SwipeSlide
+
+$.extend(SwipeSlide3D.prototype, {
+  setup: function() {
+    var fn = this.isVertical ? 'height' : 'width'
+    this.dimension = this.container[fn]()
+    this.tolerance = this.options.tolerance * this.dimension / 2
+    this.alpha     = 360/this.slides.length * (this.isVertical ? -1 : 1)
+    this.radius    = Math.round((this.dimension/2) / Math.tan(Math.PI / this.slides.length))
+    this.slides.each($.proxy(this.positionSlide, this))
+    this.move(0,0)
+  },
+  validPage: function(num){    
+    if (num < 0) num += this.numPages
+    else if (num >= this.numPages) num %= this.numPages
+    return num
+  },
+  animationProperties: function(distance) {
+    var delta = (this.alpha * distance / this.dimension) - (this.alpha * this.currentPage)
+    return { translate3d: '0,0,'+ -this.radius + 'px', rotate3d: this.vectorsWithDeg(delta) }
+  },
+  positionSlide: function(i, slide){
+    $(slide).animate({ rotate3d: this.vectorsWithDeg(i*this.alpha), translate3d: '0,0,'+this.radius+'px' }, {duration: 0})
+  },
+  vectorsWithDeg: function(degree){
+    return (this.isVertical ? '1,0' : '0,1') + ',0,' + degree + 'deg'
+  },
+  withResistance: function(d) {return d} // no resistance for 3d
+})
+
+// zepto plugin
+;(function($) {
+  $.fn.swipeSlide = function(options) {
+    var klass = (options=options||{}).threeD ? SwipeSlide3D : SwipeSlide
+    return this.each(function() { new klass(this, options) })
+  }
+})(window.Zepto)
