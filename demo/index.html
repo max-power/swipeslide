@@ -2,21 +2,24 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width; initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
   <title>Swipe Gallery</title>
-  <script src="zepto.min.js" type="text/javascript"></script>
+  <script src="lib/zepto.min.js" type="text/javascript"></script>
   <script src="../swipeslide.js" type="text/javascript"></script>
   <link rel="stylesheet" href="../swipeslide.css">
   <style type="text/css" media="screen">
   header,footer,article,section,figure,figcaption {display: block;}
   body,ul,li,figure {margin:0;padding:0;}
+  li {list-style:none}
   body {
     font: 16px/24px Helvetica, Arial, sans-serif;
     -webkit-text-size-adjust:none;
+    overflow-x:hidden;
   }
 
   header { padding: 20px 60px; color: #fff; background: #000;}
 
+  
   #g1 {
     width: 100%;
     max-width: 1200px;
@@ -28,15 +31,14 @@
   }
   #g1 figcaption {
     position: absolute;
-    top: 0; left: 0; right: 0;
+    top: -100px; left: 0; right: 0;
     padding: 10px 60px;
     background: rgba(0,0,0,0.5);
     color: #fff;
-    opacity: 0;
-    -webkit-transition: opacity 0.5s;
+    -webkit-transition: top 0.5s;
   }
   #g1 figcaption.active {
-    opacity: 1;
+    top: 0
   }
   #g1 .ui-swipeslide-bullets {
     width: 100%;
@@ -90,12 +92,12 @@
   }
   
   #g3 {
-    width: 80%;
-    height: 100px;
+    width:80%;
+    height: 140px;
     margin: 50px auto;
   }
   #g3 .ui-swipeslide-slide {
-    width: 200px; height: 100px; opacity: 0.2;
+    width: 100%; height: 100px; opacity: 0.2;
     -webkit-transition: opacity 0.5s;
   }
   #g3 .ui-swipeslide-slide.active {
@@ -104,12 +106,26 @@
   </style>
   <script type="text/javascript">
   $(document).ready(function() {
-    $('#g1').swipeSlide({contentSelector: '#g1-content'});
+    $('#g1').swipeSlide({
+      beforeChange: function(instance, oldIndex, newIndex){
+        instance.visibleSlides().find('figcaption').removeClass('active')
+      },
+      afterChange: function(instance, newIndex){
+        instance.visibleSlides().find('figcaption').addClass('active')
+      }
+    });
     $('#g2').swipeSlide({vertical: true});
-    $('#g3').swipeSlide({threeD: true});
-    $('#g1 figure').bind('tap dblclick', function(e){
-      $(this).find('figcaption').toggleClass('active');
-    })
+    $('#g3').swipeSlide({
+      threeD: true, 
+      first: 3, 
+      autoPlay: 2,
+      beforeChange: function(instance, oldIndex, newIndex){
+        instance.visibleSlides().removeClass('active')
+      },
+      afterChange: function(instance, newIndex){
+        instance.visibleSlides().addClass('active')
+      }
+    });
   })  
   </script>
 </head>
@@ -118,7 +134,7 @@
     <h1>SwipeSlide</h1>
   </header>
   
-  <div id="g1">
+  <section id="g1">
     <!--div class="legend">Swipe</div-->
     <div id="g1-content">
       <figure style="background: #fff;display: -webkit-box;  -webkit-box-pack: center; -webkit-box-align: center">
@@ -171,30 +187,29 @@
         </div>
       </figure>
     </div>
-  </div>
+  </section>
 
 
   
-  <div id="g2">
+  <section id="g2">
     <ul>
       <li style="background: #f00;"><a class="next">Next</a></li>
       <li style="background: #f00;">1</li>
       <li style="background: #0f0;">2</li>
-      <li style="background: #00f;">3</li>
+      <li style="background: #00f;"><a class="first">&uarr;</a></li>
     </ul>
-  </div>
+  </section>
   
-  <div id="g3">
+  <section id="g3">
     <ul>
-      <li style="background: #f00;">1</li>
+      <li style="background: #f00;"><a class="prev">1</a></li>
       <li style="background: #090;">2</li>
       <li style="background: #0f0;">3</li>
       <li style="background: #0f9;">4</li>
       <li style="background: #0ff;">5</li>
-      <li style="background: #09f;">6</li>
-
+      <li style="background: #09f;"><a class="next">6</a></li>
     </ul>
-  </div>
+  </section>
 
 </body>
 </html>
