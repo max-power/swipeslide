@@ -136,12 +136,10 @@ SwipeSlide.prototype = {
   },
     
   touchEnd: function(e){
-    if (this.isScroll && this.touch.start && this.touch.end) return true
-    var distance = this.distance(this.isVertical)
-    if (Math.abs(distance) > this.tolerance) {
-      distance < 0 ? this.next() : this.prev()
-    } else {
-      this.page(this.currentPage)
+    if (!this.isScroll) {
+      var distance = this.distance(this.isVertical), add = 0
+      if (Math.abs(distance) > this.tolerance) add = distance < 0 ? 1 : -1
+      this.page(this.currentPage + add)
     }
     this.touch = {}
     return false
