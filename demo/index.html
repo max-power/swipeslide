@@ -31,15 +31,14 @@
   }
   #g1 figcaption {
     position: absolute;
-    top: 0; left: 0; right: 0;
+    top: -100px; left: 0; right: 0;
     padding: 10px 60px;
     background: rgba(0,0,0,0.5);
     color: #fff;
-    opacity: 0;
-    -webkit-transition: opacity 0.5s;
+    -webkit-transition: top 0.5s;
   }
   #g1 figcaption.active {
-    opacity: 1;
+    top: 0
   }
   #g1 .ui-swipeslide-bullets {
     width: 100%;
