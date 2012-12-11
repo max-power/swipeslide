@@ -117,7 +117,8 @@ SwipeSlide.prototype = {
     
   touchStart: function(e){
     this.touch.start = this.trackTouch(e)
-    this.isScroll = undefined
+    delete this.isScroll
+    if (!this.isTouch) return false
   },
     
   touchMove: function(e){
