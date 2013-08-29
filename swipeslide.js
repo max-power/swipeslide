@@ -228,6 +228,10 @@ $.extend(SwipeSlide3D.prototype, {
 ;(function($) {
   $.fn.swipeSlide = function(options) {
     var klass = (options=options||{}).threeD ? SwipeSlide3D : SwipeSlide
-    return this.each(function() { new klass(this, options) })
+    return this.each(function() {
+      var s = new klass(this, options);
+      if (typeof($(this).data("swipeInstance", s).data("swipeInstance")) === "string") { $(this).removeAttr("data-swipeInstance"); }
+      return;
+    });
   }
 })(window.Zepto)
